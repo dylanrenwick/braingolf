@@ -8,6 +8,10 @@ Download `hello-world.bg` and run the following:
 
     python3 braingolf.py -f hello-world.bg
 
+Or run it directly from the command line:
+
+    python3 braingolf.py -c "Hello World"@11
+
 **More examples coming soon(ish)**
 
 ## How to use
@@ -26,7 +30,7 @@ Braingolf will, by default, output the final element of the stack when the progr
 
 Operators:
 
-    +,-,/,*,^,%  - Pops the last 2 elements from the stack and applies the corresponding operator to them, both printing the output and adding it to the end of the stack
+    +,-,/,*,^,%  - Pops the last 2 elements from the stack and applies the corresponding operator to them, adding it to the end of the stack
     _            - Pops the last element from the stack and prints it
     =            - Prints the stack in full
     @            - Pops the last element of the stack, and attempts to parse it as a charcode to a char, printing the char
