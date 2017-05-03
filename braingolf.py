@@ -52,9 +52,16 @@ def parse(code):
   string = False;
   escape = False;
   multiprint = False;
+  skip = False;
+  ifd = False;
   printcount = "";
   multichar = "";
   for c in code:
+    if skip:
+      if c == '|' or c == '%':
+        skip = False;
+      continue;
+
     if multiprint:
       if isint(c):
         printcount += c;
@@ -93,6 +100,14 @@ def parse(code):
       convert = True;
     elif c == '~':
       reverse = True;
+    elif c == '?':
+      val = getstackval(stack, preserve, reverse);
+      if int(val) <= 0:
+        skip = True;
+        ifd = True;
+    elif c == '%' and not ifd:
+      skip = True;
+      ifd = False;
     elif c == '+':
       vals = getstackvals(stack, preserve, reverse);
       stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
