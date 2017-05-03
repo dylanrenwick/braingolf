@@ -169,7 +169,10 @@ def parse(code):
       vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
       preserve = False;
-      flip = False;      
+      flip = False;
+    elif c == '%':
+      vals = getstackvals(stack, preserve, reverse, flip);
+      stack.append(operate(operator.mod, int(vals[0]), int(vals[1])));
     elif isint(c):
       stack.append(int(c));
     elif c == '!':
