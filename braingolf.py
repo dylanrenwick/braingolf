@@ -30,7 +30,7 @@ def getstackval(stack, preserve, rev):
   else:
     return stack.popleft() if rev else stack.pop();
 
-def getstackvals(stack, preserve, rev):
+def getstackvals(stack, preserve, rev, flip):
   if len(stack) > 1:
     if preserve:
       left = stack[0] if rev else stack[-1];
@@ -43,7 +43,7 @@ def getstackvals(stack, preserve, rev):
       left = right = stack[0];
     else:
       left = right = stack.pop();
-  return (left, right);
+  return (left, right) if not flip else (right, left);
 
 def parse(code):
   print('Parsing %s' % code);
@@ -62,14 +62,30 @@ def parse(code):
   skip = False;
   ifd = False;
   silent = False;
+  flip = False;
+  loop = False;
+  loopstart = 0;
   printcount = "";
   multichar = "";
-  for c in code:
+  x = 0;
+  while x < len(code):
+    c = code[x];
+    x += 1;
+
     if skip:
       if c == '|' or c == '%':
         skip = False;
         ifd = False;
       continue;
+
+    if loop:
+      if c == ']':
+        if stack[0] > 0:
+          stack[0] -= 1;
+          x = loopstart;
+        else:
+          loop = False;
+        continue;
 
     if multiprint:
       if isint(c):
@@ -117,31 +133,43 @@ def parse(code):
       reverse = True;
     elif c == '$':
       silent = True;
+    elif c == ',':
+      flip = True;
+    elif c == '.':
+      stack.append(stack[-1]);
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
         skip = True;
         ifd = True;
+    elif c == '&':
+      loop = True;
+      loopstart = x;
     elif c == '+':
-      vals = getstackvals(stack, preserve, reverse);
+      vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
       preserve = False;
+      flip = False;
     elif c == '/':
-      vals = getstackvals(stack, preserve, reverse);
+      vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.floordiv, int(vals[0]), int(vals[1])));
       preserve = False;
+      flip = False;
     elif c == '*':
-      vals = getstackvals(stack, preserve, reverse);
+      vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.mul, int(vals[0]), int(vals[1])));
       preserve = False;
+      flip = False;
     elif c == '-':
-      vals = getstackvals(stack, preserve, reverse);
+      vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
       preserve = False;
+      flip = False;
     elif c == '^':
-      vals = getstackvals(stack, preserve, reverse);
+      vals = getstackvals(stack, preserve, reverse, flip);
       stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
-      preserve = False;      
+      preserve = False;
+      flip = False;      
     elif isint(c):
       stack.append(int(c));
     elif c == '!':
@@ -152,6 +180,7 @@ def parse(code):
       stack.rotate(1);
     elif c == ';':
       end = True;
+    
   if multiprint:
     count = int(printcount) if printcount else 1;
     if not silent:
