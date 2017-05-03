@@ -139,7 +139,7 @@ def parse(code):
       if int(val) <= 0:
         skip = True;
         ifd = True;
-    elif c == '&':
+    elif c == '[':
       loop = True;
       loopstart = x;
     elif c == '+':
