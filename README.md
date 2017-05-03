@@ -37,6 +37,7 @@ Operators:
     ;            - Prevents the program from outputting the end of the stack upon termination
     <            - Rotates the stack 1 index to the left (takes the first element and moves it to the end of the stack)
     >            - Rotates the stack 1 index to the right (takes the final element and moves it to the start of the stack)
+    .            - Duplicates the last element in the stack
     
 Modifiers:
 
