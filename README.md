@@ -26,7 +26,7 @@ Braingolf will, by default, output the final element of the stack when the progr
 
 Basic operators:
 
-    +, -, /, *   - Pops the last 2 elements from the stack and applies the corresponding operator to them, both printing the output and adding it to the end of the stack
+    +,-,/,*,^    - Pops the last 2 elements from the stack and applies the corresponding operator to them, both printing the output and adding it to the end of the stack
     _            - Pops the last element from the stack and prints it
     =            - Prints the stack in full
     #            - Adds the charcode of the next char to the end of the stack

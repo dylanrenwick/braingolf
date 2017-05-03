@@ -109,6 +109,10 @@ def parse(code):
       vals = getstackvals(stack, preserve, reverse);
       stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
       preserve = False;
+    elif v == '^':
+      vals = getstackvals(stack, preserve, reverse);
+      stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
+      preserve = False;
     elif isint(c):
       stack.append(int(c));
     elif c == '!':
