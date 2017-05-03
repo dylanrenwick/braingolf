@@ -1,8 +1,8 @@
-#BrainGolf
+# BrainGolf
 
-##Examples
+## Examples
 
-###Hello World
+### Hello World
 
 Download `hello-world.bg` and run the following:
 
@@ -10,6 +10,6 @@ Download `hello-world.bg` and run the following:
 
 **More examples coming soon(ish)**
 
-##How to use
+## How to use
 
 **Coming soon(ish)**
