@@ -21,9 +21,6 @@ def isint(s):
 def operate(operator, first, second):
   return operator(first, second);
 
-def unioperate(operator, value):
-  return operate(operator, value, value);
-
 def getstackval(stack, preserve, rev):
   if preserve:
     return stack[0] if rev else stack[-1];
