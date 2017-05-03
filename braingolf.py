@@ -60,6 +60,7 @@ def parse(code):
     if skip:
       if c == '|' or c == '%':
         skip = False;
+        ifd = False;
       continue;
 
     if multiprint:
