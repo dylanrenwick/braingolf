@@ -73,7 +73,7 @@ def parse(code):
     x += 1;
 
     if skip:
-      if c == '|' or c == '%':
+      if c == '|' or c == ':':
         skip = False;
         ifd = False;
       continue;
@@ -114,7 +114,7 @@ def parse(code):
     elif convert:
       stack.append(ord(c));
       convert = False;
-    elif c == '%' and not ifd:
+    elif c == ':' and not ifd:
       skip = True;
     elif c == '"':
       string = True;

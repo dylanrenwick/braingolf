@@ -45,8 +45,8 @@ Modifiers:
 
 Flow Control:
 
-    ?            - Begins an if block. Will skip all code after this character until the next % or | characters if the last item of the stack is <= 0
-    %            - Begins an else block. Will skip all code after this character until the next | character if the previous if block was run (ie the last item was > 0)
+    ?            - Begins an if block. Will skip all code after this character until the next : or | characters if the last item of the stack is <= 0
+    :            - Begins an else block. Will skip all code after this character until the next | character if the previous if block was run (ie the last item was > 0)
     |            - Ends an if or else block
     &            - Begins a while loop. Will repeat all code after this character until the next ] character while the first item of the stack is > 0
     ]            - Ends a while loop
