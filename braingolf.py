@@ -9,7 +9,7 @@ class sdeque(deque):
   def __getitem__(self, index):
     if isinstance(index, slice):
       return type(self)(itertools.islice(self, index.start, index.stop, index.step))
-    return collections.deque.__getitem__(self, index)
+    return deque.__getitem__(self, index)
 
 def isint(s):
   try: 
@@ -31,12 +31,18 @@ def getstackval(stack, preserve, rev):
     return stack.popleft() if rev else stack.pop();
 
 def getstackvals(stack, preserve, rev):
-  if preserve:
-    left = stack[0] if rev else stack[-1];
-    right = stack[1] if rev else stack[-2];
+  if len(stack) > 1:
+    if preserve:
+      left = stack[0] if rev else stack[-1];
+      right = stack[1] if rev else stack[-2];
+    else:
+      left = stack.popleft() if rev else stack.pop();
+      right = stack.popleft() if rev else stack.pop();
   else:
-    left = stack.popleft() if rev else stack.pop();
-    right = stack.popleft() if rev else stack.pop();
+    if preserve:
+      left = right = stack[0];
+    else:
+      left = right = stack.pop();
   return (left, right);
 
 def parse(code):
@@ -44,7 +50,8 @@ def parse(code):
   stack = sdeque();
   if len(argv) > 3:
     stack += argv[3:];
-  print('Input: %s' % [int(i) for i in stack]);
+  if len(stack) > 0:
+    print('Input: %s' % [int(i) for i in stack if i]);
   end = False;
   preserve = False;
   convert = False;
@@ -54,6 +61,7 @@ def parse(code):
   multiprint = False;
   skip = False;
   ifd = False;
+  silent = False;
   printcount = "";
   multichar = "";
   for c in code:
@@ -69,11 +77,13 @@ def parse(code):
         continue;
       else:
         count = int(printcount) if printcount else 1;
-        print(''.join([chr(i) for i in stack[len(stack)-count:]]));
+        if not silent:
+          print(''.join([chr(i) for i in stack[len(stack)-count:]]));
         if not preserve:
           stack = stack[:-count];
         multiprint = False;
         preserve = False;
+        silent = False;
         
     if string:
       if c == '"' and not escape:
@@ -88,27 +98,30 @@ def parse(code):
     elif convert:
       stack.append(ord(c));
       convert = False;
+    elif c == '%' and not ifd:
+      skip = True;
     elif c == '"':
       string = True;
     elif c == '_':
-      print(getstackval(stack, preserve, reverse));
+      if not silent:
+        print(getstackval(stack, preserve, reverse));
       preserve = False;
+      silent = False;
     elif c == '=':
-      print([int(i) for i in stack]);
+      print([int(i) for i in stack if i]);
     elif c == '@':
       multiprint = True;
     elif c == '#':
       convert = True;
     elif c == '~':
       reverse = True;
+    elif c == '$':
+      silent = True;
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
         skip = True;
         ifd = True;
-    elif c == '%' and not ifd:
-      skip = True;
-      ifd = False;
     elif c == '+':
       vals = getstackvals(stack, preserve, reverse);
       stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
@@ -125,10 +138,10 @@ def parse(code):
       vals = getstackvals(stack, preserve, reverse);
       stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
       preserve = False;
-    elif v == '^':
+    elif c == '^':
       vals = getstackvals(stack, preserve, reverse);
       stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
-      preserve = False;
+      preserve = False;      
     elif isint(c):
       stack.append(int(c));
     elif c == '!':
@@ -141,11 +154,13 @@ def parse(code):
       end = True;
   if multiprint:
     count = int(printcount) if printcount else 1;
-    print(''.join([chr(i) for i in stack[len(stack)-count:]]));
+    if not silent:
+      print(''.join([chr(i) for i in stack[len(stack)-count:]]));
     if not preserve:
       stack = stack[:-count];
     multiprint = False;
     preserve = False;
+    silent = False;
   if not end:
     print(stack.pop());
 
