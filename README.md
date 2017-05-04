@@ -46,6 +46,7 @@ Modifiers:
     ~            - "Reverse" - Causes the next operator to read/pop from the beginning of the stack, rather than the end
     ,            - "Flip" - Causes the next diadic operator to swap its 2 values. (Eg 2 / 4 becomes 4 / 2)
     $            - "Silent" - Prevents the next operator from outputting to the console
+    &            - "Greedy" - Causes the next operator to apply to the entire stack
     #            - Adds the charcode of the next char to the end of the stack
     "            - Causes all following characters to be treated as character literals (as though preceeded by the `#` operator) until another `"` is found
 
