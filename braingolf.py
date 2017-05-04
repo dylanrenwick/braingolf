@@ -61,6 +61,7 @@ def parse(code):
   silent = False;
   flip = False;
   loop = False;
+  greedy = False;
   loopstart = 0;
   printcount = "";
   multichar = "";
@@ -68,6 +69,10 @@ def parse(code):
   while x < len(code):
     c = code[x];
     x += 1;
+
+    for y in range(0,len(stack)):
+      if stack[y] is not int:
+        stack[y] = int(stack[y]);
 
     if skip:
       if c == '|' or c == ':':
@@ -82,6 +87,7 @@ def parse(code):
           x = loopstart;
         else:
           loop = False;
+          stack.popleft();
         continue;
 
     if multiprint:
@@ -91,12 +97,13 @@ def parse(code):
       else:
         count = int(printcount) if printcount else 1;
         if not silent:
-          print(''.join([chr(i) for i in stack[len(stack)-count:]]));
+          print(''.join([chr(i if i < 1114112 else 0) for i in stack[len(stack)-count:]]), end='');
         if not preserve:
-          stack = stack[:-count];
+          stack = stack[:len(stack)-count];
         multiprint = False;
         preserve = False;
         silent = False;
+        printcount = "";
         
     if string:
       if c == '"' and not escape:
@@ -116,14 +123,29 @@ def parse(code):
     elif c == '"':
       string = True;
     elif c == '_':
-      if not silent:
-        print(getstackval(stack, preserve, reverse));
-      preserve = False;
-      silent = False;
+      if not greedy:
+        if not silent:
+          print(getstackval(stack, preserve, reverse), end='');
+        preserve = False;
+        silent = False;
+      else:
+        for i in stack:
+          if not silent:
+            print(getstackval(stack, preserve, reverse), end='');          
     elif c == '=':
-      print([int(i) for i in stack if i]);
+      print([int(i) for i in stack]);
     elif c == '@':
-      multiprint = True;
+      if not greedy:
+        multiprint = True;
+      else:
+        stri = "";
+        for i in stack:
+          stri += chr(i if i < 1114112 else 0);
+          if not preserve:
+            stack = sdeque([]);
+          preserve = False;
+        print(stri);
+        greedy = False;
     elif c == '#':
       convert = True;
     elif c == '~':
@@ -132,6 +154,8 @@ def parse(code):
       silent = True;
     elif c == ',':
       flip = True;
+    elif c == '&':
+      greedy = True;
     elif c == '.':
       stack.append(stack[-1]);
     elif c == '?':
@@ -139,37 +163,65 @@ def parse(code):
       if int(val) <= 0:
         skip = True;
         ifd = True;
+      preserve = False;
+      reverse = False;
     elif c == '[':
       loop = True;
       loopstart = x;
     elif c == '+':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
-      preserve = False;
-      flip = False;
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([sum(stack)]);
+        greedy = False;
     elif c == '/':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.floordiv, int(vals[0]), int(vals[1])));
-      preserve = False;
-      flip = False;
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.floordiv, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([reduce(operator.floordiv, stack)]);
+        greedy = False;
     elif c == '*':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.mul, int(vals[0]), int(vals[1])));
-      preserve = False;
-      flip = False;
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.mul, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([reduce(operator.mul, stack)]);
+        greedy = False;
     elif c == '-':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
-      preserve = False;
-      flip = False;
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([reduce(operator.sub, stack)]);
+        greedy = False;
     elif c == '^':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
-      preserve = False;
-      flip = False;
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([reduce(operator.pow, stack)]);
+        greedy = False;
     elif c == '%':
-      vals = getstackvals(stack, preserve, reverse, flip);
-      stack.append(operate(operator.mod, int(vals[0]), int(vals[1])));
+      if not greedy:
+        vals = getstackvals(stack, preserve, reverse, flip);
+        stack.append(operate(operator.mod, int(vals[0]), int(vals[1])));
+        preserve = False;
+        flip = False;
+      else:
+        stack = sdeque([reduce(operator.mod, stack)]);
+        greedy = False;
     elif isint(c):
       stack.append(int(c));
     elif c == '!':
@@ -191,7 +243,7 @@ def parse(code):
     preserve = False;
     silent = False;
   if not end:
-    print(stack.pop());
+    print(stack.pop() if len(stack) > 0 else '');
 
 if len(argv) < 3:
   print('Invalid args!');

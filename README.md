@@ -66,5 +66,118 @@ Exceptions:
 
     0-9 will not be treated as literals if placed directly after the @ operator, in which case they will be parsed to a number, and the @ will pop and print that many characters
 
+Detailed run-through of an example:
 
+This code takes an integer input, and will output a birthday cake with that many candles. If the input is 0 or less it will instead say "Congratulations on your new baby! :D"
+
+    Initial stack: [3] - The stack will initially contain the input given
+
+    !?                                                           [3] - This is a conditional check whether the last item in the stack is > 0, the ! prevents the item from being consumed
+      #<space>                                                   [3, 32] - 32 is the charcode for a space
+        @                                                        [3] - We popped the 32 and printed it as a character
+         .                                                       [3, 3] - Duplicate last element
+          1                                                      [3, 3, 1] - Push a 1
+           ,-                                                    [3, 2] - Subtract the last element from the 2nd to last
+             <                                                   [2, 3] - Shift the stack 1 to the left
+              ["$ "@2]                                           [2, 3] - Things get tricky here, this is a while loop that decrements the first element in the stack
+               "$ "                                              [2, 3, 36, 32] - Push the charcodes of string literal "$ " to the stack
+                   @2                                            [2, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [1, 3] - End of loop, decrement 0th item
+              [                                                  [1, 3] - And return to the start of the loop
+               "$ "                                              [1, 3, 36, 32] - Push the charcodes of string literal "$ " to the stack
+                   @2                                            [1, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [0, 3] - End of loop, decrement 0th item
+              [                                                  [0, 3] - And return to the start of the loop
+               "$ "                                              [0, 3, 36, 32] - Push the charcodes of string literal "$ " to the stack
+                   @2                                            [0, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [3] - End of loop, 0th item is already 0, pop it and exit loop
+                      "
+     "                                                           [3, 10, 32] - Push the charcodes of string literal "<newline> " to the stack
+      @2                                                         [2, 3] - Pop the last 2 elements and print as chars
+        .                                                        [3, 3] - Duplicate last element
+         1                                                       [3, 3, 1] - Push a 1
+          ,-                                                     [3, 2] - Subtract the last element from the 2nd to last
+            <                                                    [2, 3] - Shift the stack 1 to the left
+             [                                                   [2, 3] - New loop, same as before
+              "{ "                                               [2, 3, 123, 32] - This is a little tricky, we can't use the pipe character as, even in a string, it will end the if, so we use open brace and add 1
+                  >                                              [32, 2, 3, 123] - Shift to the right
+                   1                                             [32, 2, 3, 123, 1] - Push 1
+                    +                                            [32, 2, 3, 124] - Add last 2 items together
+                     <                                           [2, 3, 124, 32] - Voila!
+                      @2                                         [2, 3] - Pop the last 2 elements and print as chars
+                        ]                                        [1, 3] - End of loop, decrement 0th item
+             [                                                   [1, 3] - New loop, same as before
+              "{ "                                               [1, 3, 123, 32] - This is a little tricky, we can't use the pipe character as, even in a string, it will end the if, so we use open brace and add 1
+                  >                                              [32, 1, 3, 123] - Shift to the right
+                   1                                             [32, 1, 3, 123, 1] - Push 1
+                    +                                            [32, 1, 3, 124] - Add last 2 items together
+                     <                                           [1, 3, 124, 32] - Voila!
+                      @2                                         [1, 3] - Pop the last 2 elements and print as chars
+                        ]                                        [0, 3] - End of loop, decrement 0th item
+             [                                                   [0, 3] - New loop, same as before
+              "{ "                                               [0, 3, 123, 32] - This is a little tricky, we can't use the pipe character as, even in a string, it will end the if, so we use open brace and add 1
+                  >                                              [32, 0, 3, 123] - Shift to the right
+                   1                                             [32, 0, 3, 123, 1] - Push 1
+                    +                                            [32, 0, 3, 124] - Add last 2 items together
+                     <                                           [0, 3, 124, 32] - Voila!
+                      @2                                         [0, 3] - Pop the last 2 elements and print as chars
+                        ]                                        [3] - End of loop, 0th item is already 0, pop it and exit loop
+                         "
+    -"                                                           [3, 10, 45] - Push the charcodes of string literal "<newline>-" to the stack
+      @2                                                         [3] - Pop the last 2 elements and print as chars
+        .                                                        [3, 3] - Duplicate last element
+         1                                                       [3, 3, 1] - Push a 1
+          ,-                                                     [3, 2] - Subtract the last element from the 2nd to last
+            <                                                    [2, 3] - Shift the stack 1 to the left
+              ["--"@2]                                           [2, 3] - Things get tricky here, this is a while loop that decrements the first element in the stack
+               "--"                                              [2, 3, 45, 45] - Push the charcodes of string literal "--" to the stack
+                   @2                                            [2, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [1, 3] - End of loop, decrement 0th item
+              [                                                  [1, 3] - And return to the start of the loop
+               "--"                                              [1, 3, 45, 45] - Push the charcodes of string literal "--" to the stack
+                   @2                                            [1, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [0, 3] - End of loop, decrement 0th item
+              [                                                  [0, 3] - And return to the start of the loop
+               "--"                                              [0, 3, 45, 45] - Push the charcodes of string literal "--" to the stack
+                   @2                                            [0, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [3] - End of loop, 0th item is already 0, pop it and exit loop
+                         "
+    ~"                                                           [3, 10, 126] - Push the charcodes of string literal "<newline>~" to the stack
+      @2                                                         [3] - Pop the last 2 elements and print as chars
+        .                                                        [3, 3] - Duplicate last element
+         1                                                       [3, 3, 1] - Push a 1
+          ,-                                                     [3, 2] - Subtract the last element from the 2nd to last
+            <                                                    [2, 3] - Shift the stack 1 to the left
+              ["~~"@2]                                           [2, 3] - Things get tricky here, this is a while loop that decrements the first element in the stack
+               "~~"                                              [2, 3, 126, 126] - Push the charcodes of string literal "~~" to the stack
+                   @2                                            [2, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [1, 3] - End of loop, decrement 0th item
+              [                                                  [1, 3] - And return to the start of the loop
+               "~~"                                              [1, 3, 126, 126] - Push the charcodes of string literal "~~" to the stack
+                   @2                                            [1, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [0, 3] - End of loop, decrement 0th item
+              [                                                  [0, 3] - And return to the start of the loop
+               "~~"                                              [0, 3, 126, 126] - Push the charcodes of string literal "~~" to the stack
+                   @2                                            [0, 3] - Pop the last 2 elements and print as chars
+                     ]                                           [3] - End of loop, 0th item is already 0, pop it and exit loop
+                         "
+    -"                                                           [3, 10, 45] - Push the charcodes of string literal "<newline>-" to the stack
+      @2                                                         [3] - Pop the last 2 elements and print as chars
+         1                                                       [3, 1] - Push a 1
+          ,-                                                     [2] - Subtract the last element from the 2nd to last
+            ["--"@2]                                             [2] - Things get tricky here, this is a while loop that decrements the first element in the stack
+             "--"                                                [2, 45, 45] - Push the charcodes of string literal "--" to the stack
+                 @2                                              [2] - Pop the last 2 elements and print as chars
+                   ]                                             [1] - End of loop, decrement 0th item
+            [                                                    [1] - And return to the start of the loop
+             "--"                                                [1, 45, 45] - Push the charcodes of string literal "--" to the stack
+                 @2                                              [1] - Pop the last 2 elements and print as chars
+                   ]                                             [0] - End of loop, decrement 0th item
+            [                                                    [0] - And return to the start of the loop
+             "--"                                                [0, 45, 45] - Push the charcodes of string literal "--" to the stack
+                 @2                                              [0] - Pop the last 2 elements and print as chars
+                   ]                                             [] - End of loop, 0th item is already 0, pop it and exit loop
+                    :                                            [] - Else, if the input was 0 or less than 0 only code after this point would run
+                     "Congratulations on your new baby! :D"&@    [] - This would push the string seen to the stack, then pop and print it (the & on the @ causes it to pop the entire stack)
+                                                             |   [] - End if
 
