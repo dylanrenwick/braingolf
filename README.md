@@ -10,7 +10,7 @@ Download `hello-world.bg` and run the following:
 
 Or run it directly from the command line:
 
-    python3 braingolf.py -c "Hello World"@11
+    python3 braingolf.py -c "Hello World"&@
 
 **More examples coming soon(ish)**
 
