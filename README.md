@@ -44,12 +44,12 @@ Operators:
     >            - Rotates the stack 1 index to the right (takes the final element and moves it to the start of the stack)
     .            - Duplicates the last element in the stack
     {            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
+    ,            - Switches the position of the last 2 elements in the stack, does nothing if stack length < 2
 
 Modifiers:
 
     !            - "Safe" - Prevents the next operator from consuming data from the stack (it may still read, but will not pop)
     ~            - "Reverse" - Causes the next operator to read/pop from the beginning of the stack, rather than the end
-    ,            - "Flip" - Causes the next diadic operator to swap its 2 values. (Eg 2 / 4 becomes 4 / 2)
     $            - "Silent" - Prevents the next operator from outputting to the console
     &            - "Greedy" - Causes the next operator to apply to the entire stack
     #            - Adds the charcode of the next char to the end of the stack

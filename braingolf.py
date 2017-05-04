@@ -27,7 +27,7 @@ def getstackval(stack, preserve, rev):
   else:
     return stack.popleft() if rev else stack.pop();
 
-def getstackvals(stack, preserve, rev, flip):
+def getstackvals(stack, preserve, rev):
   if len(stack) > 1:
     if preserve:
       left = stack[0] if rev else stack[-1];
@@ -40,7 +40,7 @@ def getstackvals(stack, preserve, rev, flip):
       left = right = stack[0];
     else:
       left = right = stack.pop();
-  return (left, right) if not flip else (right, left);
+  return (left, right);
 
 def parse(code):
   print('Parsing %s' % code);
@@ -153,7 +153,11 @@ def parse(code):
     elif c == '$':
       silent = True;
     elif c == ',':
-      flip = False;
+      if len(stack) > 1:
+        first = stack.pop();
+        second = stack.pop();
+        stack.append(first);
+        stack.append(second);
     elif c == '&':
       greedy = True;
     elif c == '.':
@@ -180,55 +184,49 @@ def parse(code):
       loopstart = x;
     elif c == '+':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.add, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([sum(stack)]);
         greedy = False;
     elif c == '/':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.floordiv, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.floordiv, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([reduce(operator.floordiv, stack)]);
         greedy = False;
     elif c == '*':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.mul, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.mul, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([reduce(operator.mul, stack)]);
         greedy = False;
     elif c == '-':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.sub, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([reduce(operator.sub, stack)]);
         greedy = False;
     elif c == '^':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.pow, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([reduce(operator.pow, stack)]);
         greedy = False;
     elif c == '%':
       if not greedy:
-        vals = getstackvals(stack, preserve, reverse, flip);
-        stack.append(operate(operator.mod, int(vals[0]), int(vals[1])));
+        vals = getstackvals(stack, preserve, reverse);
+        stack.append(operate(operator.mod, int(vals[1]), int(vals[0])));
         preserve = False;
-        flip = True;
       else:
         stack = sdeque([reduce(operator.mod, stack)]);
         greedy = False;
