@@ -12,7 +12,7 @@ class sdeque(deque):
     return deque.__getitem__(self, index)
 
 def isint(s):
-  try: 
+  try:
     int(s)
     return True
   except ValueError:
@@ -59,7 +59,7 @@ def parse(code):
   skip = False;
   ifd = False;
   silent = False;
-  flip = False;
+  flip = True;
   loop = False;
   greedy = False;
   loopstart = 0;
@@ -104,7 +104,7 @@ def parse(code):
         preserve = False;
         silent = False;
         printcount = "";
-        
+
     if string:
       if c == '"' and not escape:
         string = False;
@@ -131,7 +131,7 @@ def parse(code):
       else:
         for i in stack:
           if not silent:
-            print(getstackval(stack, preserve, reverse), end='');          
+            print(getstackval(stack, preserve, reverse), end='');
     elif c == '=':
       print([int(i) for i in stack]);
     elif c == '@':
@@ -153,7 +153,7 @@ def parse(code):
     elif c == '$':
       silent = True;
     elif c == ',':
-      flip = True;
+      flip = False;
     elif c == '&':
       greedy = True;
     elif c == '.':
@@ -183,7 +183,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.add, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([sum(stack)]);
         greedy = False;
@@ -192,7 +192,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.floordiv, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([reduce(operator.floordiv, stack)]);
         greedy = False;
@@ -201,7 +201,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.mul, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([reduce(operator.mul, stack)]);
         greedy = False;
@@ -210,7 +210,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.sub, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([reduce(operator.sub, stack)]);
         greedy = False;
@@ -219,7 +219,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.pow, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([reduce(operator.pow, stack)]);
         greedy = False;
@@ -228,7 +228,7 @@ def parse(code):
         vals = getstackvals(stack, preserve, reverse, flip);
         stack.append(operate(operator.mod, int(vals[0]), int(vals[1])));
         preserve = False;
-        flip = False;
+        flip = True;
       else:
         stack = sdeque([reduce(operator.mod, stack)]);
         greedy = False;
@@ -242,7 +242,7 @@ def parse(code):
       stack.rotate(1);
     elif c == ';':
       end = True;
-    
+
   if multiprint:
     count = int(printcount) if printcount else 1;
     if not silent:
@@ -273,7 +273,7 @@ if mode == '-f':
   else:
     print('File %s not found!' % filename);
     exit();
-  
+
 elif mode == '-c':
   print('I should run this code: %s' % source);
   parse(source);
