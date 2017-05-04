@@ -53,6 +53,7 @@ Functions:
     l            - Pushes the length of the stack to the end of the stack.
                    This will push the length of the stack *before* the length has been pushed
                    Meaning, for example with a stack of [4,5,6], l will push 3 to the end of the stack
+    d            - Pops the last element of the stack, splits it into it's individual digits, and pushes each digit back to the stack
 
 Modifiers:
 
