@@ -38,6 +38,7 @@ Operators:
     <            - Rotates the stack 1 index to the left (takes the first element and moves it to the end of the stack)
     >            - Rotates the stack 1 index to the right (takes the final element and moves it to the start of the stack)
     .            - Duplicates the last element in the stack
+    {            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
     
 Modifiers:
 

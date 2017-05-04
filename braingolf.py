@@ -158,6 +158,16 @@ def parse(code):
       greedy = True;
     elif c == '.':
       stack.append(stack[-1]);
+    elif c == '{':
+      try:
+        inp = input();
+        if inp:
+          for ch in inp:
+            stack.append(ord(ch));
+        else:
+          stack.append(-1);
+      except EOFError:
+        stack.append(-1);
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
@@ -270,4 +280,3 @@ elif mode == '-c':
 else:
   print('Invalid flag!');
   exit();
-
