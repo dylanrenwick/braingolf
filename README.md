@@ -30,7 +30,12 @@ Braingolf will, by default, output the final element of the stack when the progr
 
 Operators:
 
-    +,-,/,*,^,%  - Pops the last 2 elements from the stack and applies the corresponding operator to them, adding it to the end of the stack
+    +            - Pops the last 2 elements from the stack and pushes the sum to the stack
+    -            - Pops the last 2 elements from the stack and pushes a - b (sub) where a is the last item and b is the 2nd to last
+    /            - Pops the last 2 elements from the stack and pushes a // b (floordiv) where a is the last item and b is the 2nd to last
+    *            - Pops the last 2 elements from the stack and pushes a * b (mul) to the stack
+    %            - Pops the last 2 elements from the stack and pushes a % b (mod) where a is the last item and b is the 2nd to last
+    ^            - Pops the last 2 elements from the stack and pushes a ^ b (pow) where a is the last item and b is the 2nd to last
     _            - Pops the last element from the stack and prints it
     =            - Prints the stack in full
     @            - Pops the last element of the stack, and attempts to parse it as a charcode to a char, printing the char
