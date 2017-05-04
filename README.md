@@ -46,6 +46,14 @@ Operators:
     {            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
     ,            - Switches the position of the last 2 elements in the stack, does nothing if stack length < 2
 
+Functions are essentially fancy operators that do slightly more complex things, but I like to give them a different name so they can be special snowflakes
+
+Functions:
+
+    l            - Pushes the length of the stack to the end of the stack.
+                   This will push the length of the stack *before* the length has been pushed
+                   Meaning, for example with a stack of [4,5,6], l will push 3 to the end of the stack
+
 Modifiers:
 
     !            - "Safe" - Prevents the next operator from consuming data from the stack (it may still read, but will not pop)

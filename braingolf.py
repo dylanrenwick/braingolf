@@ -153,11 +153,14 @@ def parse(code):
     elif c == '$':
       silent = True;
     elif c == ',':
-      if len(stack) > 1:
-        first = stack.pop();
-        second = stack.pop();
-        stack.append(first);
-        stack.append(second);
+      if not greedy:
+        if len(stack) > 1:
+          first = stack.pop();
+          second = stack.pop();
+          stack.append(first);
+          stack.append(second);
+      else:
+        stack = sdeque(reversed(stack));
     elif c == '&':
       greedy = True;
     elif c == '.':
@@ -172,6 +175,8 @@ def parse(code):
           stack.append(-1);
       except EOFError:
         stack.append(-1);
+    elif c == 'l':
+      stack.append(len(stack));
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
