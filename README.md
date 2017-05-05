@@ -54,6 +54,7 @@ Functions:
                    This will push the length of the stack *before* the length has been pushed
                    Meaning, for example with a stack of [4,5,6], l will push 3 to the end of the stack
     d            - Pops the last element of the stack, splits it into it's individual digits, and pushes each digit back to the stack
+    s            - Pops the last element of the stack, pushes 1 if the element is positive, -1 if it's negative, and 0 if it's 0
 
 Modifiers:
 

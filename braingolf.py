@@ -183,6 +183,15 @@ def parse(code):
       reverse = False;
       for ch in str(val):
         stack.append(int(ch));
+    elif c == 's':
+      if len(stack):
+        val = getstackval(stack, preserve, reverse);
+        preserve = False;
+        reverse = False;
+        if val:
+          stack.append(1);
+        else:
+          stack.append(-1 if val < 0 else 0);
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
