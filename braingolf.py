@@ -161,6 +161,7 @@ def parse(code):
           stack.append(second);
       else:
         stack = sdeque(reversed(stack));
+        greedy = False;
     elif c == '&':
       greedy = True;
     elif c == '.':
