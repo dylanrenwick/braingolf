@@ -12,6 +12,25 @@ class sdeque(deque):
       return type(self)(itertools.islice(self, index.start, index.stop, index.step))
     return deque.__getitem__(self, index)
 
+stacks = [];
+currstack = 0;
+end = False;
+preserve = False;
+convert = False;
+reverse = False;
+string = False;
+escape = False;
+multiprint = False;
+skip = False;
+ifd = False;
+silent = False;
+flip = True;
+loop = False;
+greedy = False;
+loopstart = 0;
+printcount = "";
+multichar = "";
+
 def isint(s):
   try:
     int(s)
@@ -43,31 +62,38 @@ def getstackvals(stack, preserve, rev):
       left = right = stack.pop();
   return (left, right);
 
+def getstack():
+  return stacks[currstack];
+
 def parse(code):
   print('Parsing %s' % code);
-  stack = sdeque();
+  firststack = sdeque();
   if len(argv) > 3:
-    stack += argv[3:];
-  if len(stack) > 0:
-    print('Input: %s' % [int(i) for i in stack if i]);
-  end = False;
-  preserve = False;
-  convert = False;
-  reverse = False;
-  string = False;
-  escape = False;
-  multiprint = False;
-  skip = False;
-  ifd = False;
-  silent = False;
-  flip = True;
-  loop = False;
-  greedy = False;
-  loopstart = 0;
-  printcount = "";
-  multichar = "";
+    firststack += argv[3:];
+  if len(firststack) > 0:
+    print('Input: %s' % [int(i) for i in firststack if i]);
   x = 0;
+  global stacks;
+  stacks.append(firststack);
+  global currstack;
+  global end;
+  global preserve;
+  global convert;
+  global reverse;
+  global string;
+  global escape;
+  global multiprint;
+  global skip;
+  global ifd;
+  global silent;
+  global flip;
+  global loop;
+  global greedy;
+  global loopstart;
+  global printcount;
+  global multichar;
   while x < len(code):
+    stack = getstack();
     c = code[x];
     x += 1;
 
@@ -100,7 +126,7 @@ def parse(code):
         if not silent:
           print(''.join([chr(i if i < 1114112 else 0) for i in stack[len(stack)-count:]]), end='');
         if not preserve:
-          stack = stack[:len(stack)-count];
+          stack = stack[:len(stack)-count] if count < len(stack) else sdeque();
         multiprint = False;
         preserve = False;
         silent = False;
@@ -201,6 +227,19 @@ def parse(code):
           stack.append(1);
         else:
           stack.append(-1 if val < 0 else 0);
+    elif c == 'V':
+      stacks.append(sdeque());
+      currstack = len(stacks) - 1;
+    elif c == 'v':
+      currstack += 1;
+      if currstack >= len(stacks):
+        currstack = 0;
+    elif c == 'c':
+      if len(stacks) > 1 and currstack:
+        for i in stack:
+          stacks[0].append(i);
+        stacks.remove(stack);
+        currstack = 0;
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:

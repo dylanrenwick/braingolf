@@ -56,6 +56,11 @@ Functions:
     d            - Pops the last element of the stack, splits it into it's individual digits, and pushes each digit back to the stack
     s            - Pops the last element of the stack, pushes 1 if the element is positive, -1 if it's negative, and 0 if it's 0
     r            - Pops the last element of the stack and pushes a random number between 0 and the popped element. Pushes 0 if stack is empty
+    V            - Creates a new stack and switches to it
+    v            - Switches to the next stack in the list
+    c            - Collapses the current stack into the master-stack (the 0th stack) by appending the contents of the current stack to it
+                   then removing the current stack. The master-stack (the 0th stack) cannot be collapsed, calling c when on the master-stack
+                   will have no effect.
 
 Modifiers:
 
