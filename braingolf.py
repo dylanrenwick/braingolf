@@ -4,6 +4,7 @@ from collections import deque;
 import os.path;
 import operator;
 import itertools;
+import random;
 
 class sdeque(deque):
   def __getitem__(self, index):
@@ -124,14 +125,17 @@ def parse(code):
       string = True;
     elif c == '_':
       if not greedy:
+        val = getstackval(stack, preserve, reverse);
         if not silent:
-          print(getstackval(stack, preserve, reverse), end='');
+          print(val, end='');
         preserve = False;
         silent = False;
       else:
         for i in stack:
           if not silent:
             print(getstackval(stack, preserve, reverse), end='');
+        preserve = False;
+        silent = False;
     elif c == '=':
       print([int(i) for i in stack]);
     elif c == '@':
@@ -141,10 +145,10 @@ def parse(code):
         stri = "";
         for i in stack:
           stri += chr(i if i < 1114112 else 0);
-          if not preserve:
-            stack = sdeque([]);
-          preserve = False;
-        print(stri);
+        if not preserve:
+          stack = sdeque([]);
+        preserve = False;
+        print(stri, end='');
         greedy = False;
     elif c == '#':
       convert = True;
@@ -184,6 +188,10 @@ def parse(code):
       reverse = False;
       for ch in str(val):
         stack.append(int(ch));
+    elif c == 'r':
+      stack.append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0);
+      preserve = False;
+      reverse = False;
     elif c == 's':
       if len(stack):
         val = getstackval(stack, preserve, reverse);
