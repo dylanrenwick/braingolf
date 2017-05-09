@@ -223,10 +223,10 @@ def parse(code):
         val = getstackval(stack, preserve, reverse);
         preserve = False;
         reverse = False;
-        if val:
-          stack.append(1);
+        if not val:
+          stack.append(0);
         else:
-          stack.append(-1 if val < 0 else 0);
+          stack.append(-1 if val < 0 else 1);
     elif c == 'V':
       stacks.append(sdeque());
       currstack = len(stacks) - 1;
