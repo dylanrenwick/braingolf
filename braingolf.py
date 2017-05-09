@@ -340,7 +340,7 @@ def parse(code):
     if not silent:
       print(''.join([chr(i) for i in stack[len(stack)-count:]]));
     if not preserve:
-      stack = stack[:-count];
+      stack = stack[:len(stack)-count];
     multiprint = False;
     preserve = False;
     silent = False;
