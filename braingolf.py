@@ -163,7 +163,14 @@ def parse(code):
         preserve = False;
         silent = False;
     elif c == '=':
-      print([int(i) for i in stack]);
+      if not greedy:
+        print([int(i) for i in stack]);
+      else:
+        ind = 0;
+        for st in stacks:
+          print("%s: %s" % (ind, [int(i) for i in st]));
+          ind += 1;
+        greedy = False;
     elif c == '@':
       if not greedy:
         multiprint = True;
@@ -190,7 +197,7 @@ def parse(code):
           stack.append(first);
           stack.append(second);
       else:
-        stack = sdeque(reversed(stack));
+        stacks[currstack] = stack = sdeque(reversed(stack));
         greedy = False;
     elif c == '&':
       greedy = True;
@@ -231,14 +238,33 @@ def parse(code):
       stacks.append(sdeque());
       currstack = len(stacks) - 1;
     elif c == 'v':
-      currstack += 1;
+      currstack = currstack + 1 if not reverse else currstack - 1;
       if currstack >= len(stacks):
         currstack = 0;
+      if currstack < 0:
+        currstack = len(stacks) - 1;
     elif c == 'c':
       if len(stacks) > 1 and currstack:
         for i in stack:
           stacks[0].append(i);
         stacks.remove(stack);
+        currstack = 0;
+    elif c == 'M':
+      if len(stacks) > 1:
+        val = getstackval(stack, preserve, reverse);
+        preserve = False;
+        reverse = False;
+        nextstack = currstack + 1 if currstack < len(stacks)-1 else 0;
+        stacks[nextstack].append(val);
+    elif c == 'm':
+      if len(stacks) > 1:
+        val = getstackval(stack, preserve, reverse);
+        preserve = False;
+        reverse = False;
+        nextstack = currstack - 1 if currstack > 0 else len(stacks) - 1;
+        stacks[nextstack].append(val);
+    elif c == 'R':
+      if currstack:
         currstack = 0;
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
