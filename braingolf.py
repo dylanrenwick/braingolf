@@ -63,6 +63,7 @@ def getstackvals(stack, preserve, rev):
   return (left, right);
 
 def getstack():
+  global stacks;
   return stacks[currstack];
 
 def parse(code):
@@ -126,7 +127,7 @@ def parse(code):
         if not silent:
           print(''.join([chr(i if i < 1114112 else 0) for i in stack[len(stack)-count:]]), end='');
         if not preserve:
-          stack = stack[:len(stack)-count] if count < len(stack) else sdeque();
+          stacks[currstack] = stack[:len(stack)-count] if count < len(stack) else sdeque();
         multiprint = False;
         preserve = False;
         silent = False;
