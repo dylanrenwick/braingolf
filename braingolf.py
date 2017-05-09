@@ -179,7 +179,7 @@ def parse(code):
         for i in stack:
           stri += chr(i if i < 1114112 else 0);
         if not preserve:
-          stack = sdeque([]);
+          stacks[currstack] = sdeque([]);
         preserve = False;
         print(stri, end='');
         greedy = False;
