@@ -64,6 +64,10 @@ Functions:
     M            - Pop the last element of the current stack and push it to the next stack
     m            - Pop the last element of the current stack and push it to the previous stack
     R            - Switch to the master-stack (the 0th stack)
+    p            - Pop the last element of the current stack and push its prime factors
+    u            - Keep only the first occurance of each unique element in the current stack
+    X            - Push the largest element in the stack to the stack
+    x            - Push the smallest element in the stack to the stack
 
 Modifiers:
 

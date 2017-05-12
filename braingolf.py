@@ -66,6 +66,19 @@ def getstack():
   global stacks;
   return stacks[currstack];
 
+def prime_factors(n):
+  i = 2
+  factors = []
+  while i * i <= n:
+    if n % i:
+      i += 1
+    else:
+      n //= i
+      factors.append(i)
+  if n > 1:
+    factors.append(n)
+  return factors
+
 def parse(code):
   print('Parsing %s' % code);
   firststack = sdeque();
@@ -267,6 +280,21 @@ def parse(code):
     elif c == 'R':
       if currstack:
         currstack = 0;
+    elif c == 'p':
+      val = getstackval(stack, preserve, reverse);
+      primes = prime_factors(val);
+      for i in sorted(primes):
+        stack.append(i);
+    elif c == 'u':
+      newstack = sdeque();
+      for i in stack:
+        if i not in newstack:
+          newstack.append(i);
+      stacks[currstack] = newstack;
+    elif c == 'x':
+      stack.append(min(stack));
+    elif c == 'X':
+      stack.append(max(stack));
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
