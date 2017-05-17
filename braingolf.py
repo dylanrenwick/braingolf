@@ -5,6 +5,7 @@ import os.path;
 import operator;
 import itertools;
 import random;
+import math;
 
 class sdeque(deque):
   def __getitem__(self, index):
@@ -27,6 +28,7 @@ silent = False;
 flip = True;
 loop = False;
 greedy = False;
+master = False;
 loopstart = 0;
 printcount = "";
 multichar = "";
@@ -79,6 +81,22 @@ def prime_factors(n):
     factors.append(n)
   return factors
 
+def get_primes(n):
+  prms = [2];
+  num = 3;
+  while len(prms) < n:
+    if all(num%i!=0 for i in range(2,int(math.sqrt(num))+1)):
+      prms.append(num);
+    num += 2;
+  return prms;
+
+def get_primes_limit(n):
+  prms = [2];
+  for num in range(3,n,2):
+    if all(num%i!=0 for i in range(2,int(math.sqrt(num))+1)):
+      prms.append(num);
+  return prms;
+
 def parse(code):
   print('Parsing %s' % code);
   firststack = sdeque();
@@ -103,6 +121,7 @@ def parse(code):
   global flip;
   global loop;
   global greedy;
+  global master;
   global loopstart;
   global printcount;
   global multichar;
@@ -157,7 +176,7 @@ def parse(code):
       else:
         multichar += c;
     elif convert:
-      stack.append(ord(c));
+      stacks[0 if master else currstack].append(ord(c));
       convert = False;
     elif c == ':' and not ifd:
       skip = True;
@@ -197,57 +216,67 @@ def parse(code):
         preserve = False;
         print(stri, end='');
         greedy = False;
+        master = False;
     elif c == '#':
       convert = True;
     elif c == '~':
       reverse = True;
     elif c == '$':
       silent = True;
+    elif c == '£':
+      master = True;
     elif c == ',':
       if not greedy:
         if len(stack) > 1:
           first = stack.pop();
           second = stack.pop();
-          stack.append(first);
-          stack.append(second);
+          stacks[0 if master else currstack].append(first);
+          stacks[0 if master else currstack].append(second);
       else:
-        stacks[currstack] = stack = sdeque(reversed(stack));
+        stacks[0 if master else currstack] = stack = sdeque(reversed(stack));
         greedy = False;
+      master = False;
     elif c == '&':
       greedy = True;
     elif c == '.':
-      stack.append(stack[-1]);
+      stacks[0 if master else currstack].append(stack[-1]);
+      master = False;
     elif c == '{':
       try:
         inp = input();
         if inp:
           for ch in inp:
-            stack.append(ord(ch));
+            stacks[0 if master else currstack].append(ord(ch));
         else:
-          stack.append(-1);
+          stacks[0 if master else currstack].append(-1);
       except EOFError:
-        stack.append(-1);
+        stacks[0 if master else currstack].append(-1);
+      master = False;
     elif c == 'l':
-      stack.append(len(stack));
+      stacks[0 if master else currstack].append(len(stack));
+      master = False;
     elif c == 'd':
       val = getstackval(stack, preserve, reverse);
       preserve = False;
       reverse = False;
       for ch in str(val):
-        stack.append(int(ch));
+        stacks[0 if master else currstack].append(int(ch));
+      master = False;
     elif c == 'r':
-      stack.append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0);
+      stacks[0 if master else currstack].append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0);
       preserve = False;
       reverse = False;
+      master = False;
     elif c == 's':
       if len(stack):
         val = getstackval(stack, preserve, reverse);
         preserve = False;
         reverse = False;
         if not val:
-          stack.append(0);
+          stacks[0 if master else currstack].append(0);
         else:
-          stack.append(-1 if val < 0 else 1);
+          stacks[0 if master else currstack].append(-1 if val < 0 else 1);
+        master = False;
     elif c == 'V':
       stacks.append(sdeque());
       currstack = len(stacks) - 1;
@@ -257,26 +286,39 @@ def parse(code):
         currstack = 0;
       if currstack < 0:
         currstack = len(stacks) - 1;
+      reverse = False;
     elif c == 'c':
       if len(stacks) > 1 and currstack:
         for i in stack:
           stacks[0].append(i);
         stacks.remove(stack);
         currstack = 0;
+    elif c == 'C':
+      val = getstackval(stack, True, reverse);
+      while val != 1:
+        if val % 2:
+          val = (3 * val) + 1;
+        else:
+          val /= 2;
+        stacks[0 if master else currstack].append(val);
+      reverse = False;
+      master = False;
     elif c == 'M':
       if len(stacks) > 1:
         val = getstackval(stack, preserve, reverse);
         preserve = False;
         reverse = False;
         nextstack = currstack + 1 if currstack < len(stacks)-1 else 0;
-        stacks[nextstack].append(val);
+        stacks[1 if master else nextstack].append(val);
+        master = False;
     elif c == 'm':
       if len(stacks) > 1:
         val = getstackval(stack, preserve, reverse);
         preserve = False;
         reverse = False;
         nextstack = currstack - 1 if currstack > 0 else len(stacks) - 1;
-        stacks[nextstack].append(val);
+        stacks[len(stacks) - 1 if master else nextstack].append(val);
+        master = False;
     elif c == 'R':
       if currstack:
         currstack = 0;
@@ -284,7 +326,38 @@ def parse(code):
       val = getstackval(stack, preserve, reverse);
       primes = prime_factors(val);
       for i in sorted(primes):
-        stack.append(i);
+        stacks[0 if master else currstack].append(i);
+      preserve = False;
+      reverse = False;
+      master = False;
+    elif c == 'P':
+      val = str(getstackval(stack, preserve, reverse));
+      stacks[0 if master else currstack].append(1 if val == val[::-1] else 0);
+      preserve = False;
+      reverse = False;
+      master = False;
+    elif c == 't':
+      val = getstackval(stack, preserve, reverse);
+      primes = get_primes(val);
+      for i in primes:
+        stacks[0 if master else currstack].append(i);
+      preserve = False;
+      reverse = False;
+      master = False;
+    elif c == 'T':
+      val = getstackval(stack, preserve, reverse);
+      primes = get_primes_limit(val);
+      for i in primes:
+        stacks[0 if master else currstack].append(i);
+      preserve = False;
+      reverse = False;
+      master = False;
+    elif c == 'U':
+      val = getstackval(stack, preserve, reverse);
+      for i in range(1, val):
+        stacks.insert(i, sdeque([i]));
+      preserve = False;
+      reverse = False;
     elif c == 'u':
       newstack = sdeque();
       for i in stack:
@@ -292,9 +365,11 @@ def parse(code):
           newstack.append(i);
       stacks[currstack] = newstack;
     elif c == 'x':
-      stack.append(min(stack));
+      stacks[0 if master else currstack].append(min(stack));
+      master = False;
     elif c == 'X':
-      stack.append(max(stack));
+      stacks[0 if master else currstack].append(max(stack));
+      master = False;
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
@@ -308,53 +383,60 @@ def parse(code):
     elif c == '+':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.add, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.add, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([sum(stack)]);
+        stacks[0 if master else currstack] = sdeque([sum(stack)]);
         greedy = False;
+      master = False;
     elif c == '/':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.floordiv, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.floordiv, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([reduce(operator.floordiv, stack)]);
+        stacks[0 if master else currstack] = sdeque([reduce(operator.floordiv, stack)]);
         greedy = False;
+      master = False;
     elif c == '*':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.mul, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.mul, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([reduce(operator.mul, stack)]);
+        stacks[0 if master else currstack] = sdeque([reduce(operator.mul, stack)]);
         greedy = False;
+      master = False;
     elif c == '-':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.sub, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.sub, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([reduce(operator.sub, stack)]);
+        stacks[0 if master else currstack] = sdeque([reduce(operator.sub, stack)]);
         greedy = False;
+      master = False;
     elif c == '^':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.pow, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.pow, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([reduce(operator.pow, stack)]);
+        stacks[0 if master else currstack] = sdeque([reduce(operator.pow, stack)]);
         greedy = False;
+      master = False;
     elif c == '%':
       if not greedy:
         vals = getstackvals(stack, preserve, reverse);
-        stack.append(operate(operator.mod, int(vals[1]), int(vals[0])));
+        stacks[0 if master else currstack].append(operate(operator.mod, int(vals[1]), int(vals[0])));
         preserve = False;
       else:
-        stack = sdeque([reduce(operator.mod, stack)]);
+        stacks[0 if master else currstack] = sdeque([reduce(operator.mod, stack)]);
         greedy = False;
+      master = False;
     elif isint(c):
-      stack.append(int(c));
+      stacks[0 if master else currstack].append(int(c));
+      master = False;
     elif c == '!':
       preserve = True;
     elif c == '<':

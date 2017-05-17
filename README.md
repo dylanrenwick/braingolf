@@ -64,10 +64,13 @@ Functions:
     M            - Pop the last element of the current stack and push it to the next stack
     m            - Pop the last element of the current stack and push it to the previous stack
     R            - Switch to the master-stack (the 0th stack)
+    P            - Pop the last element of the current stack, push 1 if it is palindromic, and 0 otherwise
     p            - Pop the last element of the current stack and push its prime factors
     u            - Keep only the first occurance of each unique element in the current stack
     X            - Push the largest element in the stack to the stack
     x            - Push the smallest element in the stack to the stack
+    t            - Pops the last element of the current stack and calculaes that many prime numbers, pushing each one to the stack
+    T            - Pops the last element of the current stack and calclates every prime number below that amount, pushing each one to the stack
 
 Modifiers:
 
