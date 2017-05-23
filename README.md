@@ -69,8 +69,9 @@ Functions:
     u            - Keep only the first occurance of each unique element in the current stack
     X            - Push the largest element in the stack to the stack
     x            - Push the smallest element in the stack to the stack
-    t            - Pops the last element of the current stack and calculaes that many prime numbers, pushing each one to the stack
-    T            - Pops the last element of the current stack and calclates every prime number below that amount, pushing each one to the stack
+    T            - Pops the last element of the current stack and pushes tan(x)
+    S            - Pops the last element of the current stack and pushes sin(x)
+    C            - Pops the last element of the current stack and pushes cos(x)
 
 Modifiers:
 
@@ -84,6 +85,8 @@ Modifiers:
 Flow Control:
 
     ?            - Begins an if block. Will skip all code after this character until the next : or | characters if the last item of the stack is <= 0
+    e            - Begins an if block. Will skip all code after this character until the next : or | characters if the last 2 items of the stack are not equal
+    E            - Begins an if block. Will skip all code after this character until the next : or | characters if the current stack is not equal to the next stack
     :            - Begins an else block. Will skip all code after this character until the next | character if the previous if block was run (ie the last item was > 0)
     |            - Ends an if or else block
     [            - Begins a while loop. Will repeat all code after this character until the next ] character while the first item of the stack is > 0

@@ -5,6 +5,7 @@ import os.path;
 import operator;
 import itertools;
 import random;
+import math;
 import re;
 
 class sdeque(deque):
@@ -300,11 +301,26 @@ def parse(code):
     elif c == 'R':
       if currstack:
         currstack = 0;
+    elif c == 'S':
+      val = getstackval(stack, preserve, reverse);
+      stack.append(math.sin(val));
+    elif c == 'C':
+      val = getstackval(stack, preserve, reverse);
+      stack.append(math.cos(val));
+    elif c == 'T':
+      val = getstackval(stack, preserve, reverse);
+      stack.append(math.tan(val));
     elif c == 'p':
       val = getstackval(stack, preserve, reverse);
       primes = prime_factors(val);
       for i in sorted(primes):
         stack.append(i);
+    elif c == 'P':
+      newstack = sdeque();
+      for i in stack:
+        if i >= 32 and i <= 126:
+          newstack.append(i);
+      stacks[currstack] = newstack;
     elif c == 'u':
       newstack = sdeque();
       for i in stack:
@@ -315,6 +331,20 @@ def parse(code):
       stack.append(min(stack));
     elif c == 'X':
       stack.append(max(stack));
+    elif c == 'e':
+      vals = getstackvals(stack, preserve, reverse);
+      if int(vals[0]) != int(vals[1]):
+        skip = True;
+        ifd = True;
+      preserve = False;
+      reverse = False;
+    elif c == 'E':
+      if len(stacks) > 1:
+        if stacks[currstack] != stacks[currstack+1]:
+          skip = True;
+          ifd = True;
+        preserve = False;
+        reverse = False;
     elif c == '?':
       val = getstackval(stack, preserve, reverse);
       if int(val) <= 0:
