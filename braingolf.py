@@ -109,6 +109,8 @@ def parse(code):
   global stacks;
   if len(argv) > 3:
     stacks += parse_args(argv[3:]);
+  else:
+    stacks.append(sdeque());
   global currstack;
   global end;
   global preserve;
