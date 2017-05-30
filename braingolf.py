@@ -350,7 +350,7 @@ def parse(code):
     elif c == 'J':
       newstack = sdeque()
       for i in stacks[currstack]:
-        if i in "aeiouAEIOU":
+        if chr(i) in "aeiouAEIOU":
           newstack.append(1)
         else:
           newstack.append(0)
