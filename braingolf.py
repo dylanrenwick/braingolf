@@ -355,6 +355,9 @@ def parse(code):
         else:
           newstack.append(0)
       stacks[currstack] = newstack
+    elif c == 'H':
+      strng = ''.join(stack)
+      stacks[currstack] = sdeque([1 if strng == strng[::-1] else 0])
     elif c == 'n':
       newstack = sdeque()
       for i in stacks[currstack]:
