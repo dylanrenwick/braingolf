@@ -348,12 +348,29 @@ def parse(code):
         preserve = False
         reverse = False
     elif c == 'J':
-      newstack = sdeque();
+      newstack = sdeque()
       for i in stacks[currstack]:
         if i in "aeiouAEIOU":
-          newstack.append(1);
+          newstack.append(1)
         else:
-          newstack.append(0);
+          newstack.append(0)
+      stacks[currstack] = newstack
+    elif c == 'n':
+      newstack = sdeque()
+      for i in stacks[currstack]:
+        if i:
+          newstack.append(0)
+        else:
+          newstack.append(1)
+      stacks[currstack] = newstack
+    elif c == 'N':
+      newstack = sdeque()
+      for i in stacks[currstack]:
+        if i:
+          newstack.append(1)
+        else:
+          newstack.append(0)
+      stacks[currstack] = newstack
     elif c == '?':
       val = getstackval(stack, preserve, reverse)
       if int(val) <= 0:
