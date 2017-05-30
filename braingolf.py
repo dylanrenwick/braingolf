@@ -464,7 +464,7 @@ def parse(code):
     preserve = False
     silent = False
   if not end:
-    print(stack.pop() if len(stack) > 0 else '')
+    print(stacks[currstack].pop() if len(stacks[currstack]) > 0 else '')
 
 if len(argv) < 3:
   print('Invalid args!')
