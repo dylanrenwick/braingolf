@@ -212,11 +212,12 @@ def parse_char(code, stacks):
       preserve = False
       silent = False
     else:
-      for i in stack:
+      for i in range(0, len(stack)):
         if not silent:
           print(getstackval(stack, preserve, reverse), end='')
       preserve = False
       silent = False
+      greedy = False
   elif c == '=':
     if not greedy:
       print([int(i) for i in stack])
