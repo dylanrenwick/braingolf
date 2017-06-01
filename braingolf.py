@@ -486,14 +486,14 @@ def parse_char(code, stacks):
     end = True
 
 def parse(code):
-  print('Parsing %s' % code)
+  #print('Parsing %s' % code)
   global string
   global end
   global multiprint
   global stacks
   global x
-  if len(argv) > 1:
-    stacks += parse_args(argv[1:])
+  if len(argv) > 3:
+    stacks += parse_args(argv[3:])
   else:
     stacks.append(sdeque())
   while x < len(code):
@@ -532,7 +532,7 @@ if mode == '-f':
     exit()
 
 elif mode == '-c':
-  print('I should run this code: %s' % source)
+  #print('I should run this code: %s' % source)
   parse(source)
 else:
   print('Invalid flag!')
