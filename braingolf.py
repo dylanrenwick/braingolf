@@ -213,8 +213,9 @@ def parse_char(code, stacks):
       silent = False
     else:
       for i in range(0, len(stack)):
+        val = getstackval(stack, preserve, reverse)
         if not silent:
-          print(getstackval(stack, preserve, reverse), end='')
+          print(val, end='')
       preserve = False
       silent = False
       greedy = False
