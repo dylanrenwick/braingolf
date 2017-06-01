@@ -1,3 +1,5 @@
+from __future__ import print_function
+import sys
 from sys import argv
 from functools import reduce
 from collections import deque
@@ -513,27 +515,27 @@ def parse(code):
     print(stacks[currstack].pop() if len(stacks[currstack]) > 0 else '')
 
 if len(argv) < 3:
-  print('Invalid args!')
-  print('Correct usage: %s <flag> <source> [source args]\n    <flag> : Either -f or -c. -f indicates that <source> is a file to be read from, while -c indicates that <source> is braingolf code to be run.' % argv[0])
+  eprint('Invalid args!')
+  eprint('Correct usage: %s <flag> <source> [source args]\n    <flag> : Either -f or -c. -f indicates that <source> is a file to be read from, while -c indicates that <source> is braingolf code to be run.' % argv[0])
   exit()
 
 mode = argv[1]
 source = argv[2]
 
 if mode == '-f':
-  print('I should run the code in this file: %s' % source)
+  #print('I should run the code in this file: %s' % source)
   filename = source
   if os.path.isfile(filename):
     with open(source) as f:
       source = f.read()
     parse(source)
   else:
-    print('File %s not found!' % filename)
+    #print('File %s not found!' % filename)
     exit()
 
 elif mode == '-c':
   #print('I should run this code: %s' % source)
   parse(source)
 else:
-  print('Invalid flag!')
+  eprint('Invalid flag!')
   exit()
