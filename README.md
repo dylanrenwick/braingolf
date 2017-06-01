@@ -1,4 +1,4 @@
-# BrainGolf
+# Braingolf
 
 ## Examples
 
