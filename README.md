@@ -43,7 +43,6 @@ Operators:
     <            - Rotates the stack 1 index to the left (takes the first element and moves it to the end of the stack)
     >            - Rotates the stack 1 index to the right (takes the final element and moves it to the start of the stack)
     .            - Duplicates the last element in the stack
-    {            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
     ,            - Switches the position of the last 2 elements in the stack, does nothing if stack length < 2
 
 Functions are essentially fancy operators that do slightly more complex things, but I like to give them a different name so they can be special snowflakes
@@ -72,6 +71,13 @@ Functions:
     T            - Pops the last element of the current stack and pushes tan(x)
     S            - Pops the last element of the current stack and pushes sin(x)
     C            - Pops the last element of the current stack and pushes cos(x)
+    J            - Pops the last element of the current stack and pushes 1 if it is a vowel (aeiouAEIOU) and 0 otherwise
+    N            - Loops through the current stack, replacing each element with a 1 if it is a Python3 truthy value, and 0 otherwise
+    n            - Loops through the current stack, replacing each element with a 0 if it is a Python3 truthy value, and 1 otherwise
+    H            - Pops the entire stack, pushes 1 if the stack is Palindromic, and 0 otherwise
+                   NOTE: Soon to be removed/replaced as duplicate of P
+    i            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
+    a            - Creates a new stack containing every lowercase letter of the alphabet, in order
 
 Modifiers:
 
@@ -91,6 +97,8 @@ Flow Control:
     |            - Ends an if or else block
     [            - Begins a while loop. Will repeat all code after this character until the next ] character while the first item of the stack is > 0
     ]            - Ends a while loop
+    {            - Begins a foreach loop. Each iteration will rotate the stack so that the next element is last, then run the containing code
+    }            - Ends a foreach loop
 
 Literals:
 
