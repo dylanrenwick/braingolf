@@ -50,14 +50,14 @@ def operate(operator, first, second):
   return operator(first, second)
 
 def getstackval(stack, preserve, rev):
-  if len(stack) == 0: return
+  if len(stack) == 0: return 0
   if preserve:
     return stack[0] if rev else stack[-1]
   else:
     return stack.popleft() if rev else stack.pop()
 
 def getstackvals(stack, preserve, rev):
-  if len(stack) < 2: return
+  if len(stack) < 1: return (0, 0)
   if len(stack) > 1:
     if preserve:
       left = stack[0] if rev else stack[-1]
