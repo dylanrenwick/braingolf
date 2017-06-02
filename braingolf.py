@@ -1,4 +1,5 @@
 from __future__ import print_function
+from decimal import Decimal
 import sys
 from sys import argv
 from functools import reduce
@@ -291,6 +292,12 @@ def parse_char(code, stacks):
         stack.append(0)
       else:
         stack.append(-1 if val < 0 else 1)
+  elif c == 't':
+    val = getstackval(stack, preserve, reverse)
+    preserve = False
+    reverse = False
+    sci = '%.2E' % Decimal(val)
+    stacks[currstack] += [ord(i) for i in sci]
   elif c == 'V':
     stacks.append(sdeque())
     currstack = len(stacks) - 1
