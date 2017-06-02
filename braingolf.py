@@ -382,6 +382,11 @@ def parse_char(code, stacks):
       preserve = false
       reverse = false
       greedy = false
+  elif c == 'a':
+    newstack = sdeque()
+    for i in range(0, 26):
+      newstack.append(ord(a) + i)
+    stacks.append(newstack)
   elif c == 'A':
     x += 1
     iterator = sdeque(reversed(stack))
