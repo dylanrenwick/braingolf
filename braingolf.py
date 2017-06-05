@@ -386,9 +386,9 @@ def parse_char(code, stacks):
     else:
       val = getstackval(stack, preserve, reverse)
       stack.append(1 if chr(val) in "aeiouAEIOU" else 0)
-      preserve = false
-      reverse = false
-      greedy = false
+      preserve = False
+      reverse = False
+      greedy = False
   elif c == 'a':
     newstack = sdeque()
     for i in range(0, 26):
