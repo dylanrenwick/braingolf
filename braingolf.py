@@ -513,6 +513,8 @@ def parse(code):
   #print('Parsing %s' % code)
   global string
   global end
+  global silent
+  global preserve
   global multiprint
   global stacks
   global x
@@ -527,9 +529,9 @@ def parse(code):
   if multiprint:
     count = int(printcount) if printcount else 1
     if not silent:
-      print(''.join([chr(i) for i in stack[len(stack)-count:]]))
+      print(''.join([chr(i) for i in stacks[currstack][len(stacks[currstack])-count:]]))
     if not preserve:
-      stack = stack[:len(stack)-count]
+      stacks[currstack] = stacks[currstack][:len(stacks[currstack])-count]
     multiprint = False
     preserve = False
     silent = False
