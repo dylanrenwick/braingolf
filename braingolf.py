@@ -356,6 +356,14 @@ def parse_char(code, stacks):
       if i not in newstack:
         newstack.append(i)
     stacks[currstack] = newstack
+  elif c == 'U':
+    newstack = sdeque()
+    val = getstackval(stack, preserve, reverse)
+    preserve = False
+    reverse = False
+    for i in range(0, val):
+      newstack.append(i+1)
+    stacks[currstack] = newstack
   elif c == 'x':
     stack.append(min(stack))
   elif c == 'X':
