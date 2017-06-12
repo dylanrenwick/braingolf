@@ -279,11 +279,19 @@ def parse_char(code, stacks):
   elif c == 'l':
     stack.append(len(stack))
   elif c == 'd':
-    val = getstackval(stack, preserve, reverse)
-    preserve = False
-    reverse = False
-    for ch in str(val):
-      stack.append(int(ch))
+    if not greedy:
+      val = getstackval(stack, preserve, reverse)
+      preserve = False
+      reverse = False
+      for ch in str(val):
+        stack.append(int(ch))
+    else:
+      newstack = sdeque()
+      for i in stack:
+        for ch in str(val):
+          newstack.append(int(ch))
+      stacks[currstack] = newstack
+      greedy = False
   elif c == 'r':
     stack.append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0)
     preserve = False
