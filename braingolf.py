@@ -149,6 +149,10 @@ def parse_char(code, stacks):
     if c == '|' or c == ':':
       skip = False
       ifd = False
+    elif c == ']' and loop:
+      loop = False
+    elif c == '}' and fancyloop:
+      fancyloop = False
     return
 
   if fancyloop:
@@ -193,11 +197,12 @@ def parse_char(code, stacks):
       string = False
       stack += [ord(i) for i in multichar]
       multichar = ""
-    elif c == '\\':
-      if not escape:
-        escape = True
+    elif c == '\\' and not escape:
+      escape = True
     else:
       multichar += c
+      if escape:
+          escape = False
   elif convert:
     stack.append(ord(c))
     convert = False
@@ -488,8 +493,14 @@ def parse_char(code, stacks):
       stack.append(operate(operator.pow, int(vals[1]), int(vals[0])))
       preserve = False
     else:
-      stack = sdeque([reduce(operator.pow, stack)])
+      val = getstackval(stack, False, reverse)
+      newstack = sdeque([val])
+      for i in stack:
+        newstack[0] = newstack[0]**i
+      stacks[currstack] = newstack
       greedy = False
+      preserve = False
+      reverse = False
   elif c == '%':
     if not greedy:
       vals = getstackvals(stack, preserve, reverse)
