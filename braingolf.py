@@ -477,7 +477,7 @@ def parse_char(code, stacks):
       stack.append(operate(operator.floordiv, int(vals[1]), int(vals[0])))
       preserve = False
     else:
-      stack = sdeque([reduce(operator.floordiv, stack)])
+      stacks[currstack] = sdeque([reduce(operator.floordiv, stack)])
       greedy = False
   elif c == '*':
     if not greedy:
@@ -485,7 +485,7 @@ def parse_char(code, stacks):
       stack.append(operate(operator.mul, int(vals[1]), int(vals[0])))
       preserve = False
     else:
-      stack = sdeque([reduce(operator.mul, stack)])
+      stacks[currstack] = sdeque([reduce(operator.mul, stack)])
       greedy = False
   elif c == '-':
     if not greedy:
@@ -493,7 +493,7 @@ def parse_char(code, stacks):
       stack.append(operate(operator.sub, int(vals[1]), int(vals[0])))
       preserve = False
     else:
-      stack = sdeque([reduce(operator.sub, stack)])
+      stacks[currstack] = sdeque([reduce(operator.sub, stack)])
       greedy = False
   elif c == '^':
     if not greedy:
@@ -515,7 +515,7 @@ def parse_char(code, stacks):
       stack.append(operate(operator.mod, int(vals[1]), int(vals[0])))
       preserve = False
     else:
-      stack = sdeque([reduce(operator.mod, stack)])
+      stacks[currstack] = sdeque([reduce(operator.mod, stack)])
       greedy = False
   elif isint(c):
     stack.append(int(c))
