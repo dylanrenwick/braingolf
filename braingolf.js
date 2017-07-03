@@ -2,7 +2,7 @@ var newCon = (function(oldCon) {
     return {
         log: function(text, mods) {
             if (!mods['$']) {
-                process.stdout.write(text);
+                process.stdout.write(text.toString());
             }
         },
         info: oldCon.info,
@@ -48,7 +48,7 @@ function tokenStream(streamRead) {
         if (this.cache === '') {
             token = this.stream.next();
             if (program.verbose) console.log('    Token starting at ' + token);
-            if (token in modifiers) {
+            if (modifiers.includes(token)) {
                 if (program.verbose) console.log('    Token start is modifier');
                 while (this.stream.peek() in modifiers) {
                     token += this.stream.next();
@@ -96,10 +96,9 @@ function getValues(stack, mods, amt) {
 }
 
 function getValuesOrGreedy(stack, mods, amt) {
-    console.log(mods);
     if (mods['&']) {
         values = stack.slice(0);
-        stack = [];
+        if (!mods['!']) stack.length = 0;
         return values;
     } else {
         return getValues(stack, mods, amt);
@@ -125,14 +124,27 @@ var operators = {
     '/': function(stack, mods) { operatorReduce(stack, mods, function(a, b) { return Math.floor(a / b); }); },
     '^': function(stack, mods) { operatorReduce(stack, mods, function(a, b) { return Math.pow(a, b); }); },
     '%': function(stack, mods) { operatorReduce(stack, mods, function(a, b) { return a % b; }); },
-    '=': newCon.log,
+    '=': function(stack, mods) { newCon.log(JSON.stringify(stack) + "\n", mods); },
     '_': function(stack, mods) { newCon.log(getValue(stack, mods), mods); },
     '@': function(stack, mods) { var strArr = getValuesOrGreedy(stack, mods, 1); var str = ''; for(i = 0; i < strArr.length; i++) { str += String.fromCharCode(strArr[i] % 1114111); } newCon.log(str, mods); },
     ';': function(stack, mods) { end = true; },
-    'l': function(stack, mods) { stack.push(stack.length); },
     '#': function(stack, mods) { stack.push(arguments[2]); },
-    '"': function(stack, mods) { pushString(stack, arguments[2]); }
+    '"': function(stack, mods) { pushString(stack, arguments[2]); },
+    ',': function(stack, mods) { var x = stack[stack.length - 1], y = stack[stack.length - 2]; stack[stack.length - 2] = x; stack[stack.length - 1] = y; },
+    '.': function(stack, mods) { stack.push(stack[stack.length - 1]); },
+    '<': function(stack, mods) { stack.push(stack.shift()); },
+    '>': function(stack, mods) { stack.unshift(stack.pop()); },
+    'l': function(stack, mods) { stack.push(stack.length); },
+    's': function(stack, mods) { var arr = getValuesOrGreedy(stack, mods, 1); arr.forEach(function(x) { stack.push(x > 0 ? 1 : (x < 0 ? -1 : 0)); }); },
+    'r': function(stack, mods) { var val = getValue(stack, mods); stack.push(Math.random() * val); },
+    'H': function(stack, mods) { var str = getValuesOrGreedy(stack, mods, stack.length).join(''); if (program.verbose) { console.log("    Comparing " + str + " with " + stack.reverse().join('')); stack.reverse(); } stack.push(str === stack.reverse().join('') ? 1 : 0); },
+    '[': function(stack, mods) {  }
+
 };
+
+function beginLoop(stack, mods) {
+    
+}
 
 function parseTok(tok) {
     if (program.verbose) console.log('Parsing: ' + tok);
@@ -156,7 +168,6 @@ function parse(tokStream) {
     while(!tokStream.eof()) {
         parseTok(tokStream.next());
     }
-    console.log("");
     if (stacks[currStack].length > 0 && !end) {
         console.log(stacks[currStack][stacks[currStack].length - 1]);
     }
