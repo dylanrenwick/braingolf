@@ -306,6 +306,47 @@ def parse_char(code, stacks):
       stack.append(-1)
   elif c == 'l':
     stack.append(len(stack))
+  elif c == 'L':
+    if not greedy:
+      val = getstackval(stack, preserve, reverse)
+      preserve = False
+      reverse = False
+      stack.append(len(str(val)))
+    else:
+      newstack = sdeque([])
+      for i in stack:
+        newstack.append(len(i))
+      stacks[currstack] = newstack
+      greedy = False
+  elif c == 'G':
+    if not greedy:
+      val = getstackval(stack, preserve, reverse)
+      preserve = False
+      reverse = False
+      newarr = []
+      chain = ''
+      for i in str(val):
+        if i in chain or chain == '':
+          chain += i
+        else:
+          newarr.append(chain)
+          chain = i
+      newarr.append(chain)
+      stack += sdeque(newarr)
+    else:
+      newstack = sdeque()
+      for i in stack:
+        mewarr = []
+        chain = ''
+        for n in str(i):
+          if n in chain or chain == '':
+            chain += n
+          else:
+            newarr.append(chain)
+            chain = ''
+        newstack += sdeque(newarr)
+      stacks[currstack] = newstack
+      greedy = False
   elif c == 'd':
     if not greedy:
       val = getstackval(stack, preserve, reverse)
@@ -575,35 +616,33 @@ def parse_char(code, stacks):
     end = True
 
 def parse(code):
-  #print('Parsing %s' % code)
-  global string
-  global end
-  global silent
-  global preserve
-  global multiprint
   global stacks
   global x
+
+  while x < len(code):
+    parse_char(code, stacks)
+    x += 1
+
+def prepParse(code):
+  global string
+  global stacks
+  global multiprint
+  global silent
+  global end
   if len(argv) > 3:
     stacks += parse_args(argv[3:])
   else:
     stacks.append(sdeque())
   while len(stacks) < 3:
     stacks.append(sdeque())
-  while x < len(code):
-    parse_char(code, stacks)
-    x += 1
-
+  parse(code)
   if multiprint:
     count = int(printcount) if printcount else 1
     if not silent:
       print(''.join([chr(i) for i in stacks[currstack][len(stacks[currstack])-count:]]))
-    if not preserve:
-      stacks[currstack] = stacks[currstack][:len(stacks[currstack])-count]
-    multiprint = False
-    preserve = False
-    silent = False
   if not end:
     print(stacks[currstack].pop() if len(stacks[currstack]) > 0 else '')
+
 
 if len(argv) < 3:
   eprint('Invalid args!')
@@ -626,7 +665,7 @@ if mode == '-f':
 
 elif mode == '-c':
   #print('I should run this code: %s' % source)
-  parse(source)
+  prepParse(source)
 else:
   eprint('Invalid flag!')
   exit()
