@@ -101,6 +101,9 @@ Flow Control:
     ]            - Ends a while loop
     {            - Begins a foreach loop. Each iteration will rotate the stack so that the next element is last, then run the containing code
     }            - Ends a foreach loop
+    (            - Special foreach loop, for each iteration, pops the last element from the stack and moves it to a special sandboxed stack
+                   Runs the code within the loop on that sandboxed environment, then prepends the last item from the sandbox stack to the main stack
+    )            - End a special foreach loop
 
 Literals:
 

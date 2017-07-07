@@ -32,10 +32,17 @@ silent = False
 flip = True
 loop = False
 fancyloop = False
+specialloop = False
 greedy = False
 loopstart = 0
 flstart = 0
 fliterator = sdeque()
+slstack = sdeque()
+slstart = 0
+slcount = 0
+slcurr = 0
+slcurrstack = 0
+slstacks = []
 printcount = ""
 multichar = ""
 x = 0
@@ -75,7 +82,8 @@ def getstackvals(stack, preserve, rev):
 
 def getstack():
   global stacks
-  return stacks[currstack]
+  global specialloop
+  return slstack if specialloop else stacks[currstack]
 
 def prime_factors(n):
   i = 2
@@ -131,10 +139,17 @@ def parse_char(code, stacks):
   global flip
   global loop
   global fancyloop
+  global specialloop
   global greedy
   global loopstart
   global flstart
   global fliterator
+  global slstack
+  global slcount
+  global slcurr
+  global slcurrstack
+  global slstacks
+  global slstart
   global printcount
   global multichar
 
@@ -154,6 +169,19 @@ def parse_char(code, stacks):
     elif c == '}' and fancyloop:
       fancyloop = False
     return
+
+  if specialloop:
+    if c == ')':
+      print("  --  End of specialloop, adding %s to main stack" % slstack[-1])
+      print("  --  Current specialloop info: totallen:%s, currindex:%s" % (slcount, slcurr))
+      slstacks[slcurrstack] = sdeque([slstack.pop()]) + slstacks[slcurrstack]
+      slcurr += 1
+      if slcurr < slcount:
+        print("  --  Moving to next item in specialloop: %s" % slstacks[slcurrstack][-1])
+        slstack = sdeque([slstacks[slcurrstack].pop()])
+        x = slstart
+      else:
+        specialloop = False
 
   if fancyloop:
     if c == '}':
@@ -468,6 +496,15 @@ def parse_char(code, stacks):
     fancyloop = True
     fliterator = sdeque(list(stack))
     flstart = x
+  elif c == '(':
+    specialloop = True
+    slcount = len(stack)
+    slstack = sdeque([stack.pop()])
+    slcurrstack = currstack
+    slcurr = 0
+    slstacks = stacks
+    stacks = [slstack]
+    slstart = x
   elif c == '+':
     if not greedy:
       vals = getstackvals(stack, preserve, reverse)
