@@ -43,6 +43,7 @@ slcount = 0
 slcurr = 0
 slcurrstack = 0
 slstacks = []
+slgreedy = False
 printcount = ""
 multichar = ""
 x = 0
@@ -150,6 +151,7 @@ def parse_char(code, stacks):
   global slcurrstack
   global slstacks
   global slstart
+  global slgreedy
   global printcount
   global multichar
 
@@ -172,16 +174,14 @@ def parse_char(code, stacks):
 
   if specialloop:
     if c == ')':
-      #print("  --  End of specialloop, adding %s to main stack" % slstack[-1])
-      #print("  --  Current specialloop info: totallen:%s, currindex:%s" % (slcount, slcurr))
-      slstacks[slcurrstack] = sdeque([slstack.pop()]) + slstacks[slcurrstack]
+      slstacks[slcurrstack] = sdeque(slstack) + slstacks[slcurrstack] if slgreedy else sdeque([slstack.pop()]) + slstacks[slcurrstack]
       slcurr += 1
       if slcurr < slcount:
-        #print("  --  Moving to next item in specialloop: %s" % slstacks[slcurrstack][-1])
         slstack = sdeque([slstacks[slcurrstack].pop()])
         x = slstart
       else:
         specialloop = False
+        stacks = slstacks
 
   if fancyloop:
     if c == '}':
@@ -346,6 +346,19 @@ def parse_char(code, stacks):
             chain = ''
         newstack += sdeque(newarr)
       stacks[currstack] = newstack
+      greedy = False
+  elif c == 'g':
+    if not greedy:
+      vals = getstackvals(stack, preserve, reverse)
+      preserve = False
+      reverse = False
+      val = int(str(vals[0]) + str(vals[1]))
+      stack.append(val)
+    else:
+      strng = ''
+      for i in stack:
+        strng += str(i)
+      stacks[currstack] = sdeque([int(strng)])
       greedy = False
   elif c == 'd':
     if not greedy:
@@ -546,6 +559,8 @@ def parse_char(code, stacks):
     slstacks = stacks
     stacks = [slstack]
     slstart = x
+    slgreedy = greedy
+    greedy = False
   elif c == '+':
     if not greedy:
       vals = getstackvals(stack, preserve, reverse)
