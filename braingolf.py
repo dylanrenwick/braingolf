@@ -172,12 +172,12 @@ def parse_char(code, stacks):
 
   if specialloop:
     if c == ')':
-      print("  --  End of specialloop, adding %s to main stack" % slstack[-1])
-      print("  --  Current specialloop info: totallen:%s, currindex:%s" % (slcount, slcurr))
+      #print("  --  End of specialloop, adding %s to main stack" % slstack[-1])
+      #print("  --  Current specialloop info: totallen:%s, currindex:%s" % (slcount, slcurr))
       slstacks[slcurrstack] = sdeque([slstack.pop()]) + slstacks[slcurrstack]
       slcurr += 1
       if slcurr < slcount:
-        print("  --  Moving to next item in specialloop: %s" % slstacks[slcurrstack][-1])
+        #print("  --  Moving to next item in specialloop: %s" % slstacks[slcurrstack][-1])
         slstack = sdeque([slstacks[slcurrstack].pop()])
         x = slstart
       else:
