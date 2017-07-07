@@ -80,6 +80,8 @@ Functions:
     a            - Creates a new stack containing every lowercase letter of the alphabet, in order
     t            - Pops the last element of the current stack and pushes the char values of the scientific notation equivalent
                    For example for stack value 410 would push the string "4.1E+2"
+    K            - Sorts the stack in ascending numerical order
+    k            - Sorts the stack in descending numerical order
 
 Modifiers:
 

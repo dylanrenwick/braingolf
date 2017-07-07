@@ -395,6 +395,15 @@ def parse_char(code, stacks):
         ifd = True
       preserve = False
       reverse = False
+  elif c == 'K':
+      newstack = list(stacks[currstack])
+      newstack.sort(key=int)
+      stacks[currstack] = sdeque(newstack)
+  elif c == 'k':
+      newstack = list(stacks[currstack])
+      newstack.sort(key=int)
+      newstack = list(reversed(newstack))
+      stacks[currstack] = newstack
   elif c == 'J':
     if greedy:
       newstack = sdeque()
