@@ -545,6 +545,8 @@ def parse_char(code, stacks):
     reverse = False
   elif c == '[':
     loop = True
+    if len(stacks[currstack]) > 0:
+      stacks[currstack][0] -= 1
     loopstart = x
   elif c == '{':
     fancyloop = True
