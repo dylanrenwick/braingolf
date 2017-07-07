@@ -16,8 +16,6 @@ Or run it directly from the command line:
 
 ## How to use
 
-**Coming soon(ish)**
-
 Braingolf is a simple, symbol-based language.
 
 Every symbol in Braingolf is either an operator, a modifier, or a literal.
@@ -113,6 +111,8 @@ Literals:
 Exceptions:
 
     0-9 will not be treated as literals if placed directly after the @ operator, in which case they will be parsed to a number, and the @ will pop and print that many characters
+
+When a Braingolf program first starts, 3 stacks are created.
 
 Detailed run-through of an example:
 

@@ -550,6 +550,8 @@ def parse(code):
     stacks += parse_args(argv[3:])
   else:
     stacks.append(sdeque())
+  while len(stacks) < 3:
+    stacks.append(sdeque())
   while x < len(code):
     parse_char(code, stacks)
     x += 1
