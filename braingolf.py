@@ -564,63 +564,81 @@ def parse_char(code, stacks):
 		slgreedy = greedy
 		greedy = False
 	elif c == '+':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.add, int(vals[1]), int(vals[0])))
-			preserve = False
-		else:
-			if preserve:
-				stack.append(sum(stack))
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.add, int(vals[1]), int(vals[0])))
+				preserve = False
 			else:
-				stacks[currstack] = sdeque([sum(stack)])
-			greedy = False
-			preserve = False
+				if preserve:
+					stack.append(sum(stack))
+				else:
+					stacks[currstack] = sdeque([sum(stack)])
+				greedy = False
+				preserve = False
+		else:
+			stack.append(20)
 	elif c == '/':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.floordiv, int(vals[1]), int(vals[0])))
-			preserve = False
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.floordiv, int(vals[1]), int(vals[0])))
+				preserve = False
+			else:
+				stacks[currstack] = sdeque([reduce(operator.floordiv, stack)])
+				greedy = False
 		else:
-			stacks[currstack] = sdeque([reduce(operator.floordiv, stack)])
-			greedy = False
+			stack.append(5)
 	elif c == '*':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.mul, int(vals[1]), int(vals[0])))
-			preserve = False
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.mul, int(vals[1]), int(vals[0])))
+				preserve = False
+			else:
+				stacks[currstack] = sdeque([reduce(operator.mul, stack)])
+				greedy = False
 		else:
-			stacks[currstack] = sdeque([reduce(operator.mul, stack)])
-			greedy = False
+			stack.append(1000)
 	elif c == '-':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.sub, int(vals[1]), int(vals[0])))
-			preserve = False
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.sub, int(vals[1]), int(vals[0])))
+				preserve = False
+			else:
+				stacks[currstack] = sdeque([reduce(operator.sub, stack)])
+				greedy = False
 		else:
-			stacks[currstack] = sdeque([reduce(operator.sub, stack)])
-			greedy = False
+			stack.append(-1)
 	elif c == '^':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.pow, int(vals[1]), int(vals[0])))
-			preserve = False
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.pow, int(vals[1]), int(vals[0])))
+				preserve = False
+			else:
+				val = getstackval(stack, False, reverse)
+				newstack = sdeque([val])
+				for i in stack:
+					newstack[0] = newstack[0]**i
+				stacks[currstack] = newstack
+				greedy = False
+				preserve = False
+				reverse = False
 		else:
-			val = getstackval(stack, False, reverse)
-			newstack = sdeque([val])
-			for i in stack:
-				newstack[0] = newstack[0]**i
-			stacks[currstack] = newstack
-			greedy = False
-			preserve = False
-			reverse = False
+			stack.append(1000000)
 	elif c == '%':
-		if not greedy:
-			vals = getstackvals(stack, preserve, reverse)
-			stack.append(operate(operator.mod, int(vals[1]), int(vals[0])))
-			preserve = False
+		if len(stack) > 0:
+			if not greedy:
+				vals = getstackvals(stack, preserve, reverse)
+				stack.append(operate(operator.mod, int(vals[1]), int(vals[0])))
+				preserve = False
+			else:
+				stacks[currstack] = sdeque([reduce(operator.mod, stack)])
+				greedy = False
 		else:
-			stacks[currstack] = sdeque([reduce(operator.mod, stack)])
-			greedy = False
+			stack.append(100)
 	elif isint(c):
 		stack.append(int(c))
 	elif c == '!':
