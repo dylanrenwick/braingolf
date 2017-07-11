@@ -3,6 +3,7 @@ from decimal import Decimal
 import sys
 from sys import argv
 from functools import reduce
+from itertools import permutations
 from collections import deque
 import os.path
 import operator
@@ -99,6 +100,11 @@ def prime_factors(n):
 		factors.append(n)
 	return factors
 
+def is_prime(n):
+	if (n % 2 == 0 and n > 2) or n < 2:
+		return False
+	return all(n % i for i in range(3, int(math.sqrt(n)) + 1, 2))
+
 def parse_args(args):
 	res = []
 	res.append(sdeque())
@@ -174,7 +180,7 @@ def parse_char(code, stacks):
 
 	if specialloop:
 		if c == ')':
-			slstacks[slcurrstack] = sdeque(slstack) + slstacks[slcurrstack] if slgreedy else sdeque([slstack.pop()]) + slstacks[slcurrstack]
+			slstacks[slcurrstack] = (sdeque(slstack) + sdeque(slstacks[slcurrstack])) if slgreedy else (sdeque([slstack.pop()]) + sdeque(slstacks[slcurrstack]))
 			slcurr += 1
 			if slcurr < slcount:
 				slstack = sdeque([slstacks[slcurrstack].pop()])
@@ -304,6 +310,21 @@ def parse_char(code, stacks):
 				stack.append(-1)
 		except EOFError:
 			stack.append(-1)
+	elif c == 'I':
+		if not greedy:
+			val = getstackval(stack, preserve, reverse)
+			preserve = False
+			reverse = False
+			stack.append(is_prime(val))
+		else:
+			newstack = sdeque([])
+			for i in stack:
+				if preserve:
+					newstack.append(i)
+				newstack.append(is_prime(i))
+			stacks[currstack] = newstack
+			greedy = False
+			preserve = False
 	elif c == 'l':
 		stack.append(len(stack))
 	elif c == 'L':
@@ -374,6 +395,15 @@ def parse_char(code, stacks):
 					newstack.append(int(ch))
 			stacks[currstack] = newstack
 			greedy = False
+	elif c == 'D':
+		perms = list(permutations(stack))
+		perms = [sdeque(i) for i in perms]
+		print(perms)
+		for i in range(0, len(perms)):
+			if i < len(stacks):
+				stacks[i] = perms[i]
+			else:
+				stacks.append(perms[i])
 	elif c == 'r':
 		stack.append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0)
 		preserve = False
