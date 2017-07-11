@@ -722,7 +722,7 @@ if mode == '-f':
 	if os.path.isfile(filename):
 		with open(source) as f:
 			source = f.read()
-		parse(source)
+		prepParse(source)
 	else:
 		exit()
 
