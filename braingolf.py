@@ -59,33 +59,42 @@ def isint(s):
 def operate(operator, first, second):
 	return operator(first, second)
 
-def getstackval(stack, preserve, rev):
+def getstackval(stack, pres, rev):
 	if len(stack) == 0: return 0
-	if preserve:
-		return stack[0] if rev else stack[-1]
+	if pres:
+		ret = stack[0] if rev else stack[-1]
 	else:
-		return stack.popleft() if rev else stack.pop()
+		ret = stack.popleft() if rev else stack.pop()
+	global preserve
+	global reverse
+	preserve = False
+	reverse = False
+	return ret
 
-def getstackvals(stack, preserve, rev):
+def getstackvals(stack, pres, rev):
 	if len(stack) < 1: return (0, 0)
 	if len(stack) > 1:
-		if preserve:
+		if pres:
 			left = stack[0] if rev else stack[-1]
 			right = stack[1] if rev else stack[-2]
 		else:
 			left = stack.popleft() if rev else stack.pop()
 			right = stack.popleft() if rev else stack.pop()
 	else:
-		if preserve:
+		if pres:
 			left = right = stack[0]
 		else:
 			left = right = stack.pop()
+	global preserve
+	global reverse
+	preserve = False
+	reverse = False
 	return (left, right)
 
 def getstack():
 	global stacks
 	global specialloop
-	return slstack if specialloop else stacks[currstack]
+	return stacks[currstack]
 
 def prime_factors(n):
 	i = 2
@@ -127,12 +136,13 @@ def parse_args(args):
 				res[0].append(ord(c))
 	return res
 
-def parse_char(code, stacks):
+def parse_char(code):
 	global x
 	if x < 0 or x >= len(code):
 		return
 
 	global currstack
+	global stacks
 	global end
 	global preserve
 	global convert
@@ -161,6 +171,10 @@ def parse_char(code, stacks):
 	global printcount
 	global multichar
 
+	for y in range(0,len(stacks)):
+		if stacks[y] is list:
+			stacks[y] = sdeque(stacks[y])
+
 	stack = getstack()
 	c = code[x]
 
@@ -180,10 +194,14 @@ def parse_char(code, stacks):
 
 	if specialloop:
 		if c == ')':
-			slstacks[slcurrstack] = (sdeque(slstack) + sdeque(slstacks[slcurrstack])) if slgreedy else (sdeque([slstack.pop()]) + sdeque(slstacks[slcurrstack]))
+			if slgreedy:
+				slstacks[slcurrstack] = sdeque(stack) + sdeque(slstacks[slcurrstack])
+			else:
+				slstacks[slcurrstack] = sdeque([stack.pop()]) + sdeque(slstacks[slcurrstack])
 			slcurr += 1
 			if slcurr < slcount:
 				slstack = sdeque([slstacks[slcurrstack].pop()])
+				stacks = [slstack, sdeque([]), sdeque([])]
 				x = slstart
 			else:
 				specialloop = False
@@ -398,7 +416,6 @@ def parse_char(code, stacks):
 	elif c == 'D':
 		perms = list(permutations(stack))
 		perms = [sdeque(i) for i in perms]
-		print(perms)
 		for i in range(0, len(perms)):
 			if i < len(stacks):
 				stacks[i] = perms[i]
@@ -432,6 +449,7 @@ def parse_char(code, stacks):
 			currstack = 0
 		if currstack < 0:
 			currstack = len(stacks) - 1
+		reverse = False
 	elif c == 'c':
 		if len(stacks) > 1 and currstack:
 			for i in stack:
@@ -589,7 +607,8 @@ def parse_char(code, stacks):
 		slcurrstack = currstack
 		slcurr = 0
 		slstacks = stacks
-		stacks = [slstack]
+		stacks = [slstack, sdeque([]), sdeque([])]
+		slstack = stacks[0]
 		slstart = x
 		slgreedy = greedy
 		greedy = False
@@ -634,7 +653,8 @@ def parse_char(code, stacks):
 		if len(stack) > 0:
 			if not greedy:
 				vals = getstackvals(stack, preserve, reverse)
-				stack.append(operate(operator.sub, int(vals[1]), int(vals[0])))
+				result = operate(operator.sub, int(vals[1]), int(vals[0]))
+				stack.append(result)
 				preserve = False
 			else:
 				stacks[currstack] = sdeque([reduce(operator.sub, stack)])
@@ -674,18 +694,19 @@ def parse_char(code, stacks):
 	elif c == '!':
 		preserve = True
 	elif c == '<':
-		stack.rotate(-1)
+		stacks[currstack] = sdeque(stack)
+		stacks[currstack].rotate(-1)
 	elif c == '>':
-		stack.rotate(1)
+		stacks[currstack] = sdeque(stack)
+		stacks[currstack].rotate(1)
 	elif c == ';':
 		end = True
 
 def parse(code):
-	global stacks
 	global x
 
 	while x < len(code):
-		parse_char(code, stacks)
+		parse_char(code)
 		x += 1
 
 def prepParse(code):
