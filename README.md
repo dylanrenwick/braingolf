@@ -80,6 +80,8 @@ Functions:
                    For example for stack value 410 would push the string "4.1E+2"
     K            - Sorts the stack in ascending numerical order
     k            - Sorts the stack in descending numerical order
+    y            - Copies the current stack, storing it to be pasted later
+    Y            - Pastes the currently copied stack, appending it to the end of the current stack
 
 Modifiers:
 
