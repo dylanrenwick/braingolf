@@ -46,6 +46,7 @@ slcurrstack = 0
 slstacks = []
 slgreedy = False
 boolstack = sdeque()
+boolcheck = lambda x:x!=0
 printcount = ""
 multichar = ""
 copy = sdeque()
@@ -170,6 +171,8 @@ def parse_char(code):
     global slstacks
     global slstart
     global slgreedy
+    global boolstack
+    global boolcheck
     global printcount
     global multichar
     global copy
@@ -179,11 +182,13 @@ def parse_char(code):
             stacks[y] = sdeque(stacks[y])
 
     stack = getstack()
+    boolstack = sdeque(list(stack))
     c = code[x]
 
     for y in range(0,len(stack)):
         if stack[y] is not int:
             stack[y] = int(stack[y])
+        boolstack[y] = boolcheck(stack[y])
 
     if skip:
         if c == '|' or c == ':':
@@ -402,6 +407,14 @@ def parse_char(code):
                 strng += str(i)
             stacks[currstack] = sdeque([int(strng)])
             greedy = False
+    elif c == 'B':
+        if len(stacks) > currstack:
+            if len(stacks[currstack+1]) == 0:
+                stacks[currstack+1] = sdeque(list(stack))
+            else:
+                stacks.append(sdeque(list(stack)))
+    elif c == 'b':
+        stacks[currstack] = stack + stack
     elif c == 'd':
         if not greedy:
             val = getstackval(stack, preserve, reverse)
@@ -424,6 +437,11 @@ def parse_char(code):
                 stacks[i] = perms[i]
             else:
                 stacks.append(perms[i])
+    elif c == 'f':
+        newStack = sdeque()
+        for i in range(0, len(stack)-1):
+            newStack.append(abs(stack[i] - stack[i+1]))
+        stacks[currstack] = newStack
     elif c == 'r':
         stack.append(random.randrange(0, getstackval(stack, preserve, reverse)) if len(stack) > 0 else 0)
         preserve = False
@@ -703,9 +721,11 @@ def parse_char(code):
     elif c == '<':
         stacks[currstack] = sdeque(stack)
         stacks[currstack].rotate(-1)
+        boolstack.rotate(-1)
     elif c == '>':
         stacks[currstack] = sdeque(stack)
         stacks[currstack].rotate(1)
+        boolstack.rotate(1)
     elif c == ';':
         end = True
 

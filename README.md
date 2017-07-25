@@ -51,6 +51,7 @@ Functions:
                    This will push the length of the stack *before* the length has been pushed
                    Meaning, for example with a stack of [4,5,6], l will push 3 to the end of the stack
     d            - Pops the last element of the stack, splits it into it's individual digits, and pushes each digit back to the stack
+    D            - Pops the stack, creates a stack for every permuation of the popped stack
     s            - Pops the last element of the stack, pushes 1 if the element is positive, -1 if it's negative, and 0 if it's 0
     r            - Pops the last element of the stack and pushes a random number between 0 and the popped element. Pushes 0 if stack is empty
     V            - Creates a new stack and switches to it
@@ -82,6 +83,10 @@ Functions:
     k            - Sorts the stack in descending numerical order
     y            - Copies the current stack, storing it to be pasted later
     Y            - Pastes the currently copied stack, appending it to the end of the current stack
+    G            - Pops top of stack, pushes each run of digits in the popped value, IE 1112233455 becomes [111,22,33,4,55]
+    g            - Pops the top 2 items and concatenates them, IE [11,222] becomes 11222
+    f            - Pops the stack, pushes the absolute deltas of the stack
+     
 
 Modifiers:
 
