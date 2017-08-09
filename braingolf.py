@@ -351,6 +351,12 @@ def parse_char(code):
             stacks[currstack] = newstack
             greedy = False
             preserve = False
+    elif c == 'Q':
+        val = getstackval(stack, preserve, reverse)
+        newVal = 0
+        for i in range(0,val):
+            newVal = newVal + i
+        stack.append(newVal)
     elif c == 'l':
         stack.append(len(stack))
     elif c == 'L':
