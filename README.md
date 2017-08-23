@@ -77,6 +77,7 @@ Functions:
                    NOTE: Soon to be removed/replaced as duplicate of P
     i            - Reads input from STDIN and appends each char's charcode to the stack, if no input is given, appends -1
     a            - Creates a new stack containing every lowercase letter of the alphabet, in order
+    A            - Pops the last element of the current stack, runs the next operator that many times
     t            - Pops the last element of the current stack and pushes the char values of the scientific notation equivalent
                    For example for stack value 410 would push the string "4.1E+2"
     K            - Sorts the stack in ascending numerical order

@@ -139,8 +139,7 @@ def parse_args(args):
                 res[0].append(ord(c))
     return res
 
-def parse_char(code):
-    global x
+def parse_char(code, x):
     if x < 0 or x >= len(code):
         return
 
@@ -586,16 +585,9 @@ def parse_char(code):
             newstack.append(ord('a') + i)
         stacks.append(newstack)
     elif c == 'A':
-        x += 1
-        iterator = sdeque(reversed(stack))
-        for i in iterator:
-            while stack[-1] != i:
-                stack.rotate(1)
-            before = len(stack)
-            parse_char(code, stacks)
-            diff = len(stack) - before
-            stack.rotate(diff)
-        stack.rotate(1)
+        val = getstackval(stack, preserve, reverse)
+        for i in range(1, val):
+            parse_char(code[x + 1:], 0)
     elif c == 'H':
         strng = ''.join([str(i) for i in stack])
         stacks[currstack] = sdeque([1 if strng == strng[::-1] else 0])
@@ -739,7 +731,7 @@ def parse(code):
     global x
 
     while x < len(code):
-        parse_char(code)
+        parse_char(code, x)
         x += 1
 
 def prepParse(code):
