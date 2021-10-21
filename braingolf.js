@@ -1,429 +1,252 @@
-class codeStream {
-	constructor(code) {
-		this.code = code;
-		this.index = 0;
+const process = require('process');
+const fs = require('fs');
+
+const _safe = '!';
+const _reverse = '~';
+const _silent = '$';
+const _greedy = '&';
+const _modifiers = [_safe, _reverse, _silent, _greedy];
+const _processInString = ['\\', '"'];
+
+class BGMods {
+	constructor() {
+		this.value = [];
 	}
 
-	next() {
-		return this.code[this.index++];
+	add(m) { if (!this.has(m)) this.value.push(m); }
+	reset() { this.value = []; }
+	has(m) { return this.value.includes(m); }
+}
+
+class BGStack {
+	constructor(initialValue) {
+		this.value = initialValue || [];
 	}
 
-	peek() {
-		return this.code[this.index + 1];
+	push(vals, end = true) {
+		if (typeof(vals) === 'string') {
+			let tmp = vals;
+			vals = [];
+			for (let i = 0; i < tmp.length; i++) {
+				vals.push(tmp.charCodeAt(i));
+			}
+		} else if (typeof(vals) === "number") vals = [vals];
+		else throw Error(`Can't add '${vals}' to stack!`);
+
+		if (end) this.value = this.value.concat(vals);
+		else this.value = vals.concat(this.value);
 	}
 
-	seek(i) {
-		this.index = i;
+	pop(def, end = true, count = 1) {
+		let result = [];
+		for (let i = 0; i < count; i++) {
+			let v = end ? this.value.pop() : this.value.shift();
+			result.push((v !== undefined) ? v : def);
+		}
+		return result;
+	}
+	peek(def, end = true, count = 1) {
+		let result = [];
+		for (let i = 0; i < count; i++) {
+			let v = end ? this.value[this.value.length-(i+1)] : this.value[i];
+			result.push((v !== undefined) ? v : def);
+		}
+		return result;
 	}
 
-	end() {
-		return this.index == this.code.length;
+	give(vals) {
+		let end = state.mods.has(_reverse);
+		this.push(vals, end);
+	}
+	take(def, count = 1) {
+		let end = state.mods.has(_reverse);
+		let safe = state.mods.has(_safe);
+		if (state.mods.has(_greedy)) count = this.value.length;
+		return safe
+			? this.peek(def, end, count)
+			: this.pop(def, end, count);
 	}
 }
 
-var symbols = {
-	'+': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
+var state = {
+	debug: false,
+	debugIndent: 0,
+	source: undefined,
+	ip: 0,
+	exit: false,
+	stacks: [],
+	sp: 0,
+	mods: new BGMods,
+	resetMods: false,
+	inString: false,
+	string: '',
+	escaped: false,
+	advance: true,
+	printOnExit: true,
+};
 
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'sum' },
-			{ action: 'push' }
-		];
-
-		return ast;
+var ops = {
+	'\\': () => {
+		if (!state.inString) return;
+		state.resetMods = false;
+		if (state.escaped) string += '\\';
+		else state.escaped = true;
 	},
-	'-': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'sub' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'/': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'div' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'*': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'mul' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'%': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'mod' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'_': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'print' },
-		];
-
-		return ast;
-	},
-	'_': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'print' },
-		];
-
-		return ast;
-	},
-	'=': function(stream) {
-		var ast = [
-			{ action: 'pop', reverse: false, safe: true, arg: 'all' },
-			{ action: 'printlist' }
-		];
-
-		return ast;
-	},
-	'@': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-		var count = 1;
-
-		if (!greedy && !isNaN(stream.peek())) {
-			var numStr = '';
-			while (!isNaN(stream.peek())) {
-				numStr += stream.next();
-			}
-
-			count = parseInt(numStr);
+	'"': () => {
+		state.resetMods = false;
+		if (!state.inString) { vprint("Beginning string"); state.inString = true; }
+		else if (state.escaped) string += '"';
+		else {
+			vprint("String complete:");
+			vprint(state.string, 1);
+			state.inString = false;
+			state.stacks[state.sp].give(state.string);
+			state.string = '';
+			state.resetMods = true;
 		}
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : count) },
-			{ action: 'printtext' }
-		];
-
-		return ast;
 	},
-	';': function(stream) {
-		var ast = [
-			{ action: 'preventout' }
-		];
-
-		return ast;
-	},
-	'<': function(stream) {
-		var ast = [
-			{ action: 'shift', dir: 'left' }
-		];
-
-		return ast;
-	},
-	'>': function(stream) {
-		var ast = [
-			{ action: 'shift', dir: 'right' }
-		];
-
-		return ast;
-	},
-	'.': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: true, arg: 1 },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	',': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: false, arg: (greedy ? 'all' : 2) },
-			{ action: 'flip' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'#': function(stream, modifierStr = '') {
-		var ast = [
-			{ action: 'create', value: stream.next().charCodeAt(0) },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'"': function(stream, modifierStr = '') {
-		var ast = [];
-		while (stream.peek() !== '"') {
-			ast.push({ action: 'create', value: stream.next().charCodeAt(0) });
+	'@': (i) => {
+		let countArg = '', j = 1;
+		while (i + j < state.source.length && state.source[i + j].match(/[0-9]/)) {
+			countArg += state.source[i + j];
+			j++;
 		}
-		stream.next();
-
-		ast.push({ action: 'push' });
-
-		return ast;
+		state.advance = false;
+		state.ip = i + j;
+		if (countArg.length > 0) {
+			let count = parseInt(countArg);
+			if (Number.isNaN(count)) throw Error(`Not a valid number! '${countArg}'`);
+		} else count = 1;
+		let vals = state.stacks[state.sp].take(undefined, count);
+		let str = String.fromCharCode.apply(null, vals);
+		print(str);
 	},
-	'0': () => [{ action: 'create', value: 0 },{ action: 'push' }],
-	'1': () => [{ action: 'create', value: 1 },{ action: 'push' }],
-	'2': () => [{ action: 'create', value: 2 },{ action: 'push' }],
-	'3': () => [{ action: 'create', value: 3 },{ action: 'push' }],
-	'4': () => [{ action: 'create', value: 4 },{ action: 'push' }],
-	'5': () => [{ action: 'create', value: 5 },{ action: 'push' }],
-	'6': () => [{ action: 'create', value: 6 },{ action: 'push' }],
-	'7': () => [{ action: 'create', value: 7 },{ action: 'push' }],
-	'8': () => [{ action: 'create', value: 8 },{ action: 'push' }],
-	'9': () => [{ action: 'create', value: 9 },{ action: 'push' }],
-	'l': function(stream) {
-		var ast = [
-			{ action: 'count' },
-			{ action: 'push' }
-		];
-
-		return ast;
+	'=': () => {
+		print(`[${state.stacks[state.sp].value}]\n`);
 	},
-	'd': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 1) },
-			{ action: 'split' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	's': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 1) },
-			{ action: 'sign' },
-			{ action: 'push' }
-		];
-
-		return ast;
-	},
-	'g': function(stream, modifierStr = '') {
-		var reverse = modifierStr.includes('~');
-		var safe = modifierStr.includes('!');
-		var greedy = modifierStr.includes('&');
-
-		var ast = [
-			{ action: 'pop', reverse: reverse, safe: safe, arg: (greedy ? 'all' : 2) },
-			{ action: 'concat' },
-			{ action: 'push' }
-		];
-
-		return ast;
+	';': () => {
+		state.printOnExit = false;
 	}
 };
 
-function astFromSymbol(symbol, stream) {
-	if (opts.verbose) console.log('Parsing ' + symbol);
-	if (symbols[symbol]) {
-		return symbols[symbol](stream);
-	}
+function vprint(str, extraIndent = 0, prefix = true) {
+	if (!state.debug) return;
+	if (str === undefined) str = '';
+	process.stderr.write((prefix ? '[DBG]> ' : '')
+		+ '    '.repeat(state.debugIndent + extraIndent)
+		+ `${str}\n`
+	);
+}
+function print(str) {
+	process.stdout.write(str);
 }
 
-function parse(code) {
-	if (opts.verbose) console.log(code);
-	var stream = new codeStream(code);
-	var ast = [];
+function parse() {
+	vprint("Running...");
+	vprint("Source:");
+	vprint(`\n${state.source}\n`, 0, false);
+	vprint(`Initial stack count: ${state.stacks.length}`);
+	vprint();
 
-	if (opts.verbose) console.log('Beginning Parse');
-	while(!stream.end()) {
-		var symbolAst = astFromSymbol(stream.next(), stream);
-		ast = ast.concat(symbolAst);
+	while (!state.exit) {
+		let c = state.source[state.ip];
+		state.debugIndent = 0;
+		vprint(`IP: ${state.ip}, c: ${c} (${c.charCodeAt(0)})`);
+		state.debugIndent = 1;
+		parseChar(c);
+		
+		if (state.ip < 0 || state.ip >= state.source.length) state.exit = true;
 	}
-
-	if (opts.verbose) console.log('\nResulting AST is: \n');
-	return ast;
+	
+	if (state.printOnExit && state.stacks[state.sp].value.length > 0) {
+		print(state.stacks[state.sp].pop());
+	}
+	print('\n');
+	vprint("Execution complete!");
 }
 
-function formatAst(ast) {
-	var astStr = '';
+function parseChar(c) {
+	state.advance = true;
+	state.resetMods = false;
 
-	for(var i = 0; i < ast.length; i++) {
-		astStr += ast[i].action.toUpperCase();
-		switch(ast[i].action) {
-			case 'pop':
-				astStr += ' ' + (ast[i].reverse ? '1' : '0');
-				astStr += ' ' + (ast[i].safe ? '1' : '0' );
-				astStr += ' ' + ast[i].arg;
-				break;
-			case 'create':
-				astStr += ' ' + ast[i].value;
-				break;
-			case 'shift':
-				astStr += ' ' + (ast[i].dir == 'left' ? '0' : '1');
-				break;
-			default:
-				break;
-
-		}
-		astStr += '\n';
+	if (state.inString && !_processInString.includes(c)) {
+		state.string += c;
+	} else if (_modifiers.includes(c)) {
+		vprint(`Adding modifier ${c}`);
+		state.mods.add(c);
+		vprint(`Modifiers: [${state.mods.value}]`);
+	} else {
+		state.resetMods = true;
+		runChar(c, state.ip);
 	}
 
-	return astStr;
+	if (state.resetMods) {
+		state.mods.reset();
+	}
+
+	if (state.advance) state.ip++;
 }
 
-function runBSM(code) {
-	var lines = code.split('\n');
+function runChar(c, i) {
+	op = ops[c];
+	if (op !== undefined) op(i);
+}
 
-	var output = true;
-	var stacks = [[]];
-	var index = 0;
-	var workplace = [];
+function parseArgs(args) {
+	let stackCount = 3;
 
-	for(var i = 0; i < lines.length; i++) {
-		if (lines[i] == '') continue;
-		var parts = lines[i].split(' ');
-		switch(parts[0].toLowerCase()) {
-			case 'preventout':
-				output = false;
+	for (let arg of args) {
+		switch (arg.substring(0, 2)) {
+			case '-v':
+				state.debug = true;
 				break;
-			case 'pop':
-				if (parts[3] == 'all') {
-					workplace = stacks[index];
-					if (parts[2] == 0) stacks[index] = [];
-				} else {
-					if (parts[1] == 1) stacks[index].reverse();
-					for(var j = 0; j < parts[3]; j++) {
-						if (parts[2] == 0) {
-							workplace.push(stacks[index].pop());
-						} else {
-							workplace.push(stacks[index][stacks[index].length - (1 + j)]);
-						}
-					}
-					if (parts[1] == 1) stacks[index].reverse();
-				}
+			case '-s':
+				stackCount = parseInt(arg.substring(2));
+				if (Number.isNaN(stackCount)) throw Error(`Invalid stack count: '${arg.substring(2)}'`);
 				break;
-			case 'push':
-				stacks[index] = stacks[index].concat(workplace);
-				workplace = [];
-				break;
-			case 'create':
-				workplace.push(parseInt(parts[1]));
-				break;
-			case 'sum':
-				if (workplace.length > 0) workplace = workplace.reduce((a,b) => a + b);
-				else workplace.push(20);
-				break;
-			case 'sub':
-				if (workplace.length > 0) workplace = workplace.reduce((a,b) => a - b);
-				else workplace.push(20);
-				break;
-			case 'div':
-				if (workplace.length > 0) workplace = workplace.reduce((a,b) => a / b);
-				else workplace.push(20);
-				break;
-			case 'mul':
-				if (workplace.length > 0) workplace = workplace.reduce((a,b) => a * b);
-				else workplace.push(20);
-				break;
-			case 'mod':
-				if (workplace.length > 0) workplace = workplace.reduce((a,b) => a % b);
-				else workplace.push(20);
-				break;
-			case 'print':
-				console.log(workplace.join(''));
-				break;
-			case 'printlist':
-				console.log('['+workplace.join(', ')+']');
-				break;
-			case 'printtext':
-				console.log(workplace.map(a=>String.fromCharCode(a)).join(''));
-				break;
-			case 'flip':
-				workplace.reverse();
-				break;
-			case 'shift':
-				if (parts[1] == 1) stacks[index] = stacks[index].slice(1).push(stacks[index][0]);
-				else stacks[index] = [stacks[index][stacks[index].length - 1]].concat(stacks[index].slice(0, stacks[index].length - 2));
-				break;
-			case 'concat':
-				workplace = [workplace.join('')];
-				break;
-			default:
-				console.log('ERROR: Unrecognized symbol ' + parts[0] + ' at line ' + (i + 1));
-				return;
 		}
 	}
 
-	if (output) {
-		console.log(stacks[index][stacks[index].length - 1]);
+	while (state.stacks.length < stackCount) state.stacks.push(new BGStack());
+}
+
+var source = `
+
+`;
+source = source.substring(1, source.length - 1);
+
+function usageError() {
+	throw Error(`Invalid Args!
+Correct usage:
+	${process.argv[1]} <filename> [options] - Runs braingolf code contained in <filename>
+	${process.argv[1]} -i <code> [options]  - Runs braingolf code directly from the command-line
+Options:
+	-v	verbose, prints additional debug output as the interpreter runs
+	-s#	stacks, begins execution with # stacks. Defaults to 3 if not provided`);
+	process.exit(1);
+}
+
+if (process.argv.length < 3 && source.length === 0) {
+	usageError();
+}
+
+if (process.argv.length >= 3) {
+	if (process.argv[2] === "-i") {
+		if (process.argv.length < 4) usageError();
+		let fileName = process.argv[3];
+		source = fs.readFileSync(fileName);
+		parseArgs(process.argv.slice(4));
+	} else if (source.length === 0) {
+		source = process.argv[2];
+		parseArgs(process.argv.slice(3));
+	} else {
+		parseArgs(process.argv.slice(2));
+	}
+
+	if (source === undefined) {
+		throw Error(`Could not read source!`);
 	}
 }
 
-function processArgs() {
-	var verbose = false;
-	var type = 'full';
-
-	var flags = process.argv[2];
-	if (flags.includes('v')) verbose = true;
-	if (flags.includes('m')) type = 'bsm';
-	if (flags.includes('x')) type = 'transpile';
-
-	return { verbose: verbose, type: type };
-}
-
-if (process.argv[2][0] == '-') {
-	var opts = processArgs();
-	var code = process.argv[3];
-} else {
-	var opts = { verbose: false, type: 'full' };
-	var code = process.argv[2];
-}
-
-if (opts.type == 'transpile') {
-	console.log(formatAst(parse(code)));
-} else if (opts.type == 'bsm') {
-	runBSM(code);
-} else if (opts.type == 'full') {
-	var bsm = formatAst(parse(code));
-	runBSM(bsm);
-}
+state.source = source;
+parse(source);
