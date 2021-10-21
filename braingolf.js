@@ -197,6 +197,7 @@ function parse() {
 		if (state.ip < 0 || state.ip >= state.source.length) state.exit = true;
 	}
 	
+	state.debugIndent = 0;
 	if (state.printOnExit && state.stacks[state.sp].value.length > 0) {
 		print(state.stacks[state.sp].pop().toString());
 	}
