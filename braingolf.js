@@ -125,6 +125,7 @@ var ops = {
 		print(`[${state.stacks[state.sp].value}]\n`);
 	},
 	';': () => {
+		state.resetMods = false;
 		state.printOnExit = false;
 	}
 };
