@@ -170,6 +170,20 @@ var ops = {
 			state.stacks[state.sp].give(a * b);
 		}
 	},
+	'/': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic divide, pushing 5 to stack.');
+			state.stacks[state.sp].give(5);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic divide, dividing ${a} by itself.`);
+			}
+			vprint(`Pushing ${b} / ${a} = ${b / a} to stack.`);
+			state.stacks[state.sp].give(b / a);
+		}
+	},
 	'0': () => state.stacks[state.sp].give(0),
 	'1': () => state.stacks[state.sp].give(1),
 	'2': () => state.stacks[state.sp].give(2),
