@@ -37,19 +37,19 @@ class BGStack {
 		else this.value = vals.concat(this.value);
 	}
 
-	pop(def, end = true, count = 1) {
+	pop(end = true, count = 1) {
 		let result = [];
 		for (let i = 0; i < count; i++) {
 			let v = end ? this.value.pop() : this.value.shift();
-			result.push((v !== undefined) ? v : def);
+			result.push(v);
 		}
 		return result;
 	}
-	peek(def, end = true, count = 1) {
+	peek(end = true, count = 1) {
 		let result = [];
 		for (let i = 0; i < count; i++) {
 			let v = end ? this.value[this.value.length-(i+1)] : this.value[i];
-			result.push((v !== undefined) ? v : def);
+			result.push(v);
 		}
 		return result;
 	}
@@ -58,13 +58,13 @@ class BGStack {
 		let end = state.mods.has(_reverse);
 		this.push(vals, end);
 	}
-	take(def, count = 1) {
+	take(count = 1) {
 		let end = state.mods.has(_reverse);
 		let safe = state.mods.has(_safe);
 		if (state.mods.has(_greedy)) count = this.value.length;
 		return safe
-			? this.peek(def, end, count)
-			: this.pop(def, end, count);
+			? this.peek(end, count)
+			: this.pop(end, count);
 	}
 }
 
