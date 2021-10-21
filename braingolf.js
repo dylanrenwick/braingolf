@@ -156,6 +156,20 @@ var ops = {
 			state.stacks[state.sp].give(b - a);
 		}
 	},
+	'*': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic multiply, pushing 1000 to stack.');
+			state.stacks[state.sp].give(1000);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic multiply, squaring ${a}.`);
+			}
+			vprint(`Pushing ${a} * ${b} = ${a * b} to stack.`);
+			state.stacks[state.sp].give(a * b);
+		}
+	},
 	'0': () => state.stacks[state.sp].give(0),
 	'1': () => state.stacks[state.sp].give(1),
 	'2': () => state.stacks[state.sp].give(2),
