@@ -164,7 +164,7 @@ function parse() {
 	}
 	
 	if (state.printOnExit && state.stacks[state.sp].value.length > 0) {
-		print(state.stacks[state.sp].pop());
+		print(state.stacks[state.sp].pop().toString());
 	}
 	print('\n');
 	vprint("Execution complete!");
