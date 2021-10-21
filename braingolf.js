@@ -222,6 +222,7 @@ function parse() {
 		state.debugIndent = 1;
 		parseChar(c);
 		
+		vprint(`Stack is [${state.stacks[state.sp].value}]`)
 		if (state.ip < 0 || state.ip >= state.source.length) state.exit = true;
 	}
 	
