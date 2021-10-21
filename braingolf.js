@@ -142,6 +142,20 @@ var ops = {
 			state.stacks[state.sp].give(a + b);
 		}
 	},
+	'-': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic minus, pushing -1 to stack.');
+			state.stacks[state.sp].give(-1);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic minus, subtracting ${a} from itself.`);
+			}
+			vprint(`Pushing ${b} - ${a} = ${b - a} to stack.`);
+			state.stacks[state.sp].give(b - a);
+		}
+	},
 	'0': () => state.stacks[state.sp].give(0),
 	'1': () => state.stacks[state.sp].give(1),
 	'2': () => state.stacks[state.sp].give(2),
