@@ -130,6 +130,7 @@ var ops = {
 	},
 	'+': () => {
 		let [a, b] = state.stacks[state.sp].take(10, 2);
+		vprint(`Pushing ${a} + ${b} = ${a + b} to stack.`);
 		state.stacks[state.sp].give(a + b);
 	},
 	'0': () => state.stacks[state.sp].give(0),
