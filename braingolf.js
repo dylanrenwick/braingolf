@@ -129,9 +129,18 @@ var ops = {
 		state.printOnExit = false;
 	},
 	'+': () => {
-		let [a, b] = state.stacks[state.sp].take(10, 2);
-		vprint(`Pushing ${a} + ${b} = ${a + b} to stack.`);
-		state.stacks[state.sp].give(a + b);
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic plus, pushing 20 to stack.');
+			state.stacks[state.sp].give(20);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic plus, doubling ${a}.`);
+			}
+			vprint(`Pushing ${a} + ${b} = ${a + b} to stack.`);
+			state.stacks[state.sp].give(a + b);
+		}
 	},
 	'0': () => state.stacks[state.sp].give(0),
 	'1': () => state.stacks[state.sp].give(1),
