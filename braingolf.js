@@ -184,6 +184,35 @@ var ops = {
 			state.stacks[state.sp].give(b / a);
 		}
 	},
+	'^': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic exponent, pushing 1000000 to stack.');
+			state.stacks[state.sp].give(1000000);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic exponent, raising ${a} by itself.`);
+			}
+			let c = a ** b;
+			vprint(`Pushing ${a} ^ ${b} = ${c} to stack.`);
+			state.stacks[state.sp].give(c);
+		}
+	},
+	'%': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined && b === undefined) {
+			vprint('Niladic modulus, pushing 100 to stack.');
+			state.stacks[state.sp].give(100);
+		} else {
+			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
+				a = b = (a !== undefined ? a : b);
+				vprint(`Monadic modulus, moduloing ${a} by itself.`);
+			}
+			vprint(`Pushing ${b} % ${a} = ${b % a} to stack.`);
+			state.stacks[state.sp].give(b % a);
+		}
+	},
 	'0': () => state.stacks[state.sp].give(0),
 	'1': () => state.stacks[state.sp].give(1),
 	'2': () => state.stacks[state.sp].give(2),
