@@ -127,7 +127,11 @@ var ops = {
 	';': () => {
 		state.resetMods = false;
 		state.printOnExit = false;
-	}
+	},
+	'+': () => {
+		let [a, b] = state.stacks[state.sp].take(10, 2);
+		state.stacks[state.sp].give(a + b);
+	},
 };
 
 function vprint(str, extraIndent = 0, prefix = true) {
