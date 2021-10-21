@@ -299,16 +299,16 @@ if (process.argv.length < 3 && source.length === 0) {
 }
 
 if (process.argv.length >= 3) {
-	if (process.argv[2] === "-i") {
+	if (process.argv[2] === "-f") {
 		if (process.argv.length < 4) usageError();
 		let fileName = process.argv[3];
-		source = fs.readFileSync(fileName);
+		source = fs.readFileSync(fileName, 'utf-8');
+		parseArgs(process.argv.slice(4));
+	} else if (process.argv[2] === "-i") {
+		source = process.argv[3];
 		parseArgs(process.argv.slice(4));
 	} else if (source.length === 0) {
-		source = process.argv[2];
-		parseArgs(process.argv.slice(3));
-	} else {
-		parseArgs(process.argv.slice(2));
+		source = undefined;
 	}
 
 	if (source === undefined) {
