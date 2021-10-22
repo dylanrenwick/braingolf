@@ -240,6 +240,15 @@ var ops = {
 		let val = state.stacks[state.sp].take();
 		vprint(`Duplicating ${val} on stack.`);
 		state.stacks[state.sp].give(val);
+	},
+	',': () => {
+		let [a, b] = state.stacks[state.sp].take(2);
+		if (a === undefined || b === undefined) {
+			vprint('Less than 2 items on stack, ignoring operator.');
+			return;
+		}
+		vprint(`Swapping ${a} and ${b}`);
+		state.stacks[state.sp].give([a, b]);
 	}
 };
 
