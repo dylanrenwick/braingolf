@@ -369,6 +369,17 @@ var ops = {
 		state.resetMods = false;
 		state.sp = state.mainStack;
 	},
+	'P': () => {
+		let vals = state.stacks[state.sp].value.slice();
+		let rev = vals.slice().reverse();
+		vprint('Comparing');
+		vprint(`[${vals}]`);
+		vprint('and');
+		vprint(`[${rev}]`);
+		let result = (arrayEquals(vals, rev)) ? 1 : 0;
+		vprint(`Pushing ${result} to stack.`);
+		state.stacks[state.sp].give(result);
+	},
 };
 
 function runOperator(count, nilad, monad, dyad) {
@@ -388,6 +399,14 @@ function vprint(str, extraIndent = 0, prefix = true) {
 }
 function print(str) {
 	process.stdout.write(str);
+}
+
+function arrayEquals(a, b) {
+	if (a.length !== b.length) return false;
+	for (let i = 0; i < a.length; i++) {
+		if (a[i] !== b[i]) return false;
+	}
+	return true;
 }
 
 function permute(permutation) {
