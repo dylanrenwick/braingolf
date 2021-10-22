@@ -390,11 +390,11 @@ var ops = {
 	),
 };
 
-function runOperator(count, nilad, monad, dyad) {
+function runOperator(count, nilad, monad, polyad) {
 	let vals = state.stacks[state.sp].take(count).filter(n => n !== undefined);
-	if (vals.length === 0) nilad();
-	else if (vals.length === 1) monad(vals[0]);
-	else dyad(vals);
+	if (nilad && vals.length === 0) nilad();
+	else if (monad && vals.length === 1) monad(vals[0]);
+	else polyad(vals);
 }
 
 function vprint(str, extraIndent = 0, prefix = true) {
