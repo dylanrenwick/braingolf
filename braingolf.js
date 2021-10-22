@@ -31,7 +31,7 @@ class BGStack {
 				vals.push(tmp.charCodeAt(i));
 			}
 		} else if (typeof(vals) === "number") vals = [vals];
-		else throw Error(`Can't add '${vals}' to stack!`);
+		else if (!Array.isArray(vals)) throw Error(`Can't add '${vals}' to stack! Value must be string, array, or number, but got ${typeof(vals)}`);
 
 		if (start) this.value = vals.concat(this.value);
 		else this.value = this.value.concat(vals);
