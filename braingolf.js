@@ -380,6 +380,14 @@ var ops = {
 		vprint(`Pushing ${result} to stack.`);
 		state.stacks[state.sp].give(result);
 	},
+	'p': () => runOperator(1,
+		null, null,
+		(vals) => {
+			state.stacks[state.sp].give(vals.map(v => {
+				primeFactors(v);
+			}));
+		}
+	),
 };
 
 function runOperator(count, nilad, monad, dyad) {
@@ -407,6 +415,20 @@ function arrayEquals(a, b) {
 		if (a[i] !== b[i]) return false;
 	}
 	return true;
+}
+
+function primeFactors(n) {
+	let i = 2;
+	let factors = [];
+	while (i * i <= n) {
+		if (n % i) i++;
+		else {
+			n = Math.floor(n / i);
+			factors.push(i);
+		}
+	}
+	if (n > 1) factors.push(n);
+	return factors;
 }
 
 function permute(permutation) {
