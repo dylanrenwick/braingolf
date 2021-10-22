@@ -290,6 +290,15 @@ var ops = {
 			.map(p => new BGStack(p));
 		state.stacks = state.stacks.concat(permutations);
 	},
+	's': () => runOperator(1,
+		null, null,
+		(vals) => {
+			state.stacks[state.sp].give(vals.map(v => {
+				vprint(`Sign of ${v} is ${Math.sign(v)}.`);
+				return Math.sign(v);
+			}));
+		}
+	),
 };
 
 function runOperator(count, nilad, monad, dyad) {
