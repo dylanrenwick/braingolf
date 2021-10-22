@@ -128,7 +128,11 @@ var ops = {
 		print(val);
 	},
 	'=': () => {
-		print(`[${state.stacks[state.sp].value}]\n`);
+		if (state.mods.has(_greedy)) {
+			print(`[${state.stacks.map(s=>'['+s.value.join(',')+']').join(',\n')}]`)
+		} else {
+			print(`[${state.stacks[state.sp].value}]\n`);
+		}
 	},
 	';': () => {
 		state.resetMods = false;
