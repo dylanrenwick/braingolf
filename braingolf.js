@@ -325,7 +325,12 @@ function parse() {
 	
 	state.debugIndent = 0;
 	if (state.printOnExit && state.stacks[state.sp].value.length > 0) {
-		print(state.stacks[state.sp].pop().toString());
+		state.mods.reset();
+		let last = state.stacks[state.sp].take().toString();
+		vprint(`Last value is '${last}'`);
+		print(last);
+	} else {
+		vprint('Print on exit disabled');
 	}
 	print('\n');
 	vprint("Execution complete!");
