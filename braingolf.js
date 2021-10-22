@@ -224,11 +224,13 @@ var ops = {
 	'8': () => state.stacks[state.sp].give(8),
 	'9': () => state.stacks[state.sp].give(9),
 	'>': () => {
+		state.resetMods = false;
 		let val = state.stacks[state.sp].take();
 		vprint(`Moving ${val} to start of stack.`);
 		state.stacks[state.sp].value.unshift(val);
 	},
 	'<': () => {
+		state.resetMods = false;
 		let val = state.stacks[state.sp].value.shift();
 		vprint(`Moving ${val} to start of stack.`);
 		state.stacks[state.sp].value.push(val);
