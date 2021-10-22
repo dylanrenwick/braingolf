@@ -134,91 +134,96 @@ var ops = {
 		state.resetMods = false;
 		state.printOnExit = false;
 	},
-	'+': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	'+': () => runOperator(2,
+		() => {
 			vprint('Niladic plus, pushing 20 to stack.');
 			state.stacks[state.sp].give(20);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic plus, doubling ${a}.`);
-			}
-			vprint(`Pushing ${a} + ${b} = ${a + b} to stack.`);
-			state.stacks[state.sp].give(a + b);
+		},
+		(a) => {
+			vprint(`Monadic plus, doubling ${a}.`);
+			state.stacks[state.sp].give(a + a);
+		},
+		(vals) => {
+			let result = vals.reduce((a, b) => a + b);
+			vprint(`Pushing ${vals.join(" + ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
-	'-': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	),
+	'-': () => runOperator(2,
+		() => {
 			vprint('Niladic minus, pushing -1 to stack.');
 			state.stacks[state.sp].give(-1);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic minus, subtracting ${a} from itself.`);
-			}
-			vprint(`Pushing ${b} - ${a} = ${b - a} to stack.`);
-			state.stacks[state.sp].give(b - a);
+		},
+		(a) => {
+			vprint(`Monadic minus, subtracting ${a} from itself.`);
+			state.stacks[state.sp].give(a - a);
+		},
+		(vals) => {
+			let result = vals.reverse().reduce((a, b) => a - b);
+			vprint(`Pushing ${vals.join(" - ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
-	'*': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	),
+	'*': () => runOperator(2,
+		() => {
 			vprint('Niladic multiply, pushing 1000 to stack.');
 			state.stacks[state.sp].give(1000);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic multiply, squaring ${a}.`);
-			}
-			vprint(`Pushing ${a} * ${b} = ${a * b} to stack.`);
-			state.stacks[state.sp].give(a * b);
+		},
+		(a) => {
+			vprint(`Monadic multiply, squaring ${a}.`);
+			state.stacks[state.sp].give(a * a);
+		},
+		(vals) => {
+			let result = vals.reduce((a, b) => a * b);
+			vprint(`Pushing ${vals.join(" * ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
-	'/': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	),
+	'/': () => runOperator(2,
+		() => {
 			vprint('Niladic divide, pushing 5 to stack.');
 			state.stacks[state.sp].give(5);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic divide, dividing ${a} by itself.`);
-			}
-			vprint(`Pushing ${b} / ${a} = ${b / a} to stack.`);
-			state.stacks[state.sp].give(b / a);
+		},
+		(a) => {
+			vprint(`Monadic divide, dividing ${a} by itself.`);
+			state.stacks[state.sp].give(a / a);
+		},
+		(vals) => {
+			let result = vals.reverse().reduce((a, b) => Math.floor(a / b));
+			vprint(`Pushing ${vals.join(" / ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
-	'^': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	),
+	'^': () => runOperator(2,
+		() => {
 			vprint('Niladic exponent, pushing 1000000 to stack.');
 			state.stacks[state.sp].give(1000000);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic exponent, raising ${a} by itself.`);
-			}
-			let c = a ** b;
-			vprint(`Pushing ${a} ^ ${b} = ${c} to stack.`);
-			state.stacks[state.sp].give(c);
+		},
+		(a) => {
+			vprint(`Monadic exponent, raising ${a} by itself.`);
+			state.stacks[state.sp].give(a ** a);
+		},
+		(vals) => {
+			let result = vals.reverse().reduce((a, b) => Math.floor(a ** b));
+			vprint(`Pushing ${vals.join(" ^ ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
-	'%': () => {
-		let [a, b] = state.stacks[state.sp].take(2);
-		if (a === undefined && b === undefined) {
+	),
+	'%': () => runOperator(2,
+		() => {
 			vprint('Niladic modulus, pushing 100 to stack.');
 			state.stacks[state.sp].give(100);
-		} else {
-			if ((a === undefined && b !== undefined) || (b === undefined && a !== undefined)) {
-				a = b = (a !== undefined ? a : b);
-				vprint(`Monadic modulus, moduloing ${a} by itself.`);
-			}
-			vprint(`Pushing ${b} % ${a} = ${b % a} to stack.`);
-			state.stacks[state.sp].give(b % a);
+		},
+		(a) => {
+			vprint(`Monadic modulus, moduloing ${a} by itself.`);
+			state.stacks[state.sp].give(a % a);
+		},
+		(vals) => {
+			let result = vals.reverse().reduce((a, b) => Math.floor(a % b));
+			vprint(`Pushing ${vals.join(" % ")} = ${result} to stack.`);
+			state.stacks[state.sp].give(result);
 		}
-	},
+	),
 	'>': () => {
 		state.resetMods = false;
 		let val = state.stacks[state.sp].take();
@@ -262,6 +267,13 @@ var ops = {
 		state.stacks[state.sp].give(len);
 	},
 };
+
+function runOperator(count, nilad, monad, dyad) {
+	let vals = state.stacks[state.sp].take(count).filter(n => n !== undefined);
+	if (vals.length === 0) nilad();
+	else if (vals.length === 1) monad(vals[0]);
+	else dyad(vals);
+}
 
 function vprint(str, extraIndent = 0, prefix = true) {
 	if (!state.debug) return;
