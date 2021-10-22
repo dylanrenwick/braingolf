@@ -15,7 +15,7 @@ class BGMods {
 
 	add(m) { if (!this.has(m)) this.value.push(m); }
 	reset() { this.value = []; }
-	has(m) { return this.value.includes(m); }
+	has(m) { return state.resetMods ? this.value.includes(m) : false; }
 }
 
 class BGStack {
