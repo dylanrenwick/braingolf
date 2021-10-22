@@ -309,6 +309,43 @@ var ops = {
 			}));
 		}
 	),
+	'V': () => {
+		let newStack = new BGStack();
+		let reverse = state.mods.has(_reverse);
+		let index = reverse ? 0 : state.stacks.length;
+		if (reverse) state.stacks = [newStack].concat(state.stacks);
+		else state.stacks.push(newStack);
+		vprint(`Created new stack at index ${index}`);
+		state.sp = index;
+	},
+	'v': () => {
+		let reverse = state.mods.has(_reverse);
+		let newIndex = state.sp + (reverse ? -1 : 1);
+		if (newIndex < 0) newIndex = state.stacks.length - 1;
+		if (newIndex >= state.stacks.length) newIndex = 0;
+		vprint(`Switching to stack ${newIndex}`);
+		state.sp = newIndex;
+	},
+	'c': () => {
+		let greedy = state.mods.has(_greedy);
+		if (!greedy) {
+			if (state.sp === 0) {
+				vprint('Already on master stack, no-op');
+				return;
+			}
+			vprint(`Merging stack ${state.sp} into master stack`);
+			let stack = state.stacks[state.sp].value;
+			state.stacks.splice(state.sp, 1);
+			state.stacks[0].give(stack);
+			state.sp = 0;
+		} else {
+			vprint('Merging all stacks into master stack');
+			let stacks = state.stacks.slice(1).map(s => s.value).reduce((a, b) => a.concat(b));
+			let masterStack = new BGStack(state.stacks[0].value.concat(stacks));
+			state.stacks = [masterStack];
+			state.sp = 0;
+		}
+	}
 };
 
 function runOperator(count, nilad, monad, dyad) {
