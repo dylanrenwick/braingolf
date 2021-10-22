@@ -76,6 +76,7 @@ var state = {
 	exit: false,
 	stacks: [],
 	sp: 0,
+	mainStack: 0,
 	mods: new BGMods,
 	resetMods: false,
 	inString: false,
@@ -313,7 +314,10 @@ var ops = {
 		let newStack = new BGStack();
 		let reverse = state.mods.has(_reverse);
 		let index = reverse ? 0 : state.stacks.length;
-		if (reverse) state.stacks = [newStack].concat(state.stacks);
+		if (reverse) {
+			state.stacks = [newStack].concat(state.stacks);
+			state.mainStack++;
+		}
 		else state.stacks.push(newStack);
 		vprint(`Created new stack at index ${index}`);
 		state.sp = index;
@@ -329,23 +333,24 @@ var ops = {
 	'c': () => {
 		let greedy = state.mods.has(_greedy);
 		if (!greedy) {
-			if (state.sp === 0) {
-				vprint('Already on master stack, no-op');
+			if (state.sp === state.mainStack) {
+				vprint('Already on main stack, no-op');
 				return;
 			}
-			vprint(`Merging stack ${state.sp} into master stack`);
+			vprint(`Merging stack ${state.sp} into main stack`);
 			let stack = state.stacks[state.sp].value;
 			state.stacks.splice(state.sp, 1);
-			state.stacks[0].give(stack);
-			state.sp = 0;
+			if (state.sp < state.mainStack) state.mainStack--;
+			state.stacks[state.mainStack].give(stack);
+			state.sp = state.mainStack;
 		} else {
-			vprint('Merging all stacks into master stack');
-			let stacks = state.stacks.slice(1).map(s => s.value).reduce((a, b) => a.concat(b));
-			let masterStack = new BGStack(state.stacks[0].value.concat(stacks));
-			state.stacks = [masterStack];
-			state.sp = 0;
+			vprint('Merging all stacks into main stack');
+			let mainStack = state.stacks[state.mainStack].value;
+			let stacks = state.stacks.map((s, i) => (i !== state.mainStack) ? s.value : []).reduce((a, b) => a.concat(b));
+			state.stacks = [new BGStack(mainStack.concat(stacks))];
+			state.sp = state.mainStack = 0;
 		}
-	}
+	},
 };
 
 function runOperator(count, nilad, monad, dyad) {
