@@ -365,6 +365,10 @@ var ops = {
 		if (newIndex >= state.stacks.length) newIndex = 0;
 		state.stacks[newIndex].give(val);
 	},
+	'R': () => {
+		state.resetMods = false;
+		state.sp = state.mainStack;
+	},
 };
 
 function runOperator(count, nilad, monad, dyad) {
