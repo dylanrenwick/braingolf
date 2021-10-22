@@ -351,6 +351,20 @@ var ops = {
 			state.sp = state.mainStack = 0;
 		}
 	},
+	'M': () => {
+		if (state.mods.has(_greedy)) state.mods.value.splice(state.mods.value.indexOf(_greedy), 1);
+		let val = state.stacks[state.sp].take(1);
+		let newIndex = state.sp - 1;
+		if (newIndex < 0) newIndex = state.stacks.length - 1;
+		state.stacks[newIndex].give(val);
+	},
+	'm': () => {
+		if (state.mods.has(_greedy)) state.mods.value.splice(state.mods.value.indexOf(_greedy), 1);
+		let val = state.stacks[state.sp].take(1);
+		let newIndex = state.sp + 1;
+		if (newIndex >= state.stacks.length) newIndex = 0;
+		state.stacks[newIndex].give(val);
+	},
 };
 
 function runOperator(count, nilad, monad, dyad) {
