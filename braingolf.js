@@ -383,9 +383,8 @@ var ops = {
 	'p': () => runOperator(1,
 		null, null,
 		(vals) => {
-			state.stacks[state.sp].give(vals.map(v => {
-				primeFactors(v);
-			}));
+			state.stacks[state.sp].give(vals.map(primeFactors)
+				.reduce((a, b) => a.concat(b)));
 		}
 	),
 };
