@@ -121,6 +121,12 @@ var ops = {
 		let str = String.fromCharCode.apply(null, vals);
 		print(str);
 	},
+	'_': () => {
+		let val = state.stacks[state.sp].take();
+		if (val.length > 1) val = `[${val}]\n`;
+		else val = `${val[0]}`;
+		print(val);
+	},
 	'=': () => {
 		print(`[${state.stacks[state.sp].value}]\n`);
 	},
