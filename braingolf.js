@@ -299,6 +299,16 @@ var ops = {
 			}));
 		}
 	),
+	'r': () => runOperator(1,
+		null, null,
+		(vals) => {
+			state.stacks[state.sp].give(vals.map(v => {
+				let rand = Math.floor(Math.random() * v);
+				vprint(`Generated random number ${rand} between 0 and ${v}.`);
+				return rand;
+			}));
+		}
+	),
 };
 
 function runOperator(count, nilad, monad, dyad) {
