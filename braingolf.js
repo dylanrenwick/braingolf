@@ -270,6 +270,20 @@ var ops = {
 		vprint(`Pushing length of stack, ${len}, to stack.`);
 		state.stacks[state.sp].give(len);
 	},
+	'd': () => runOperator(1,
+		() => {
+			vprint('Niladic digit separation, pushing 0 to stack.');
+			state.stacks[state.sp].give(0);
+		},
+		null,
+		(vals) => {
+			state.stacks[state.sp].give(vals.map(v => {
+				let digits = v.toString().split('');
+				vprint(`Splitting ${v} into [${digits}]`);
+				return digits;
+			}).reduce((a, b) => a.concat(b)));
+		}
+	),
 };
 
 function runOperator(count, nilad, monad, dyad) {
