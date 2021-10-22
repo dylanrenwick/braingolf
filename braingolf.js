@@ -284,6 +284,12 @@ var ops = {
 			}).reduce((a, b) => a.concat(b)));
 		}
 	),
+	'D': () => {
+		let stack = state.stacks[state.sp].value;
+		let permutations = permute(stack).reverse().slice(1)
+			.map(p => new BGStack(p));
+		state.stacks = state.stacks.concat(permutations);
+	},
 };
 
 function runOperator(count, nilad, monad, dyad) {
@@ -303,6 +309,29 @@ function vprint(str, extraIndent = 0, prefix = true) {
 }
 function print(str) {
 	process.stdout.write(str);
+}
+
+function permute(permutation) {
+	var length = permutation.length,
+		result = [permutation.slice()],
+		c = new Array(length).fill(0),
+		i = 1, k, p;
+  
+	while (i < length) {
+		if (c[i] < i) {
+			k = i % 2 && c[i];
+			p = permutation[i];
+			permutation[i] = permutation[k];
+			permutation[k] = p;
+			++c[i];
+			i = 1;
+			result.push(permutation.slice());
+		} else {
+			c[i] = 0;
+			++i;
+		}
+	}
+	return result;
 }
 
 function parse() {
