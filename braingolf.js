@@ -219,16 +219,6 @@ var ops = {
 			state.stacks[state.sp].give(b % a);
 		}
 	},
-	'0': () => state.stacks[state.sp].give(0),
-	'1': () => state.stacks[state.sp].give(1),
-	'2': () => state.stacks[state.sp].give(2),
-	'3': () => state.stacks[state.sp].give(3),
-	'4': () => state.stacks[state.sp].give(4),
-	'5': () => state.stacks[state.sp].give(5),
-	'6': () => state.stacks[state.sp].give(6),
-	'7': () => state.stacks[state.sp].give(7),
-	'8': () => state.stacks[state.sp].give(8),
-	'9': () => state.stacks[state.sp].give(9),
 	'>': () => {
 		state.resetMods = false;
 		let val = state.stacks[state.sp].take();
@@ -255,7 +245,17 @@ var ops = {
 		}
 		vprint(`Swapping ${a} and ${b}`);
 		state.stacks[state.sp].give([a, b]);
-	}
+	},
+	'0': () => state.stacks[state.sp].give(0),
+	'1': () => state.stacks[state.sp].give(1),
+	'2': () => state.stacks[state.sp].give(2),
+	'3': () => state.stacks[state.sp].give(3),
+	'4': () => state.stacks[state.sp].give(4),
+	'5': () => state.stacks[state.sp].give(5),
+	'6': () => state.stacks[state.sp].give(6),
+	'7': () => state.stacks[state.sp].give(7),
+	'8': () => state.stacks[state.sp].give(8),
+	'9': () => state.stacks[state.sp].give(9),
 };
 
 function vprint(str, extraIndent = 0, prefix = true) {
