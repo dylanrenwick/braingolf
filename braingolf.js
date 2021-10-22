@@ -23,7 +23,7 @@ class BGStack {
 		this.value = initialValue || [];
 	}
 
-	push(vals, end = true) {
+	push(vals, start) {
 		if (typeof(vals) === 'string') {
 			let tmp = vals;
 			vals = [];
@@ -33,38 +33,38 @@ class BGStack {
 		} else if (typeof(vals) === "number") vals = [vals];
 		else throw Error(`Can't add '${vals}' to stack!`);
 
-		if (end) this.value = this.value.concat(vals);
-		else this.value = vals.concat(this.value);
+		if (start) this.value = vals.concat(this.value);
+		else this.value = this.value.concat(vals);
 	}
 
-	pop(end = true, count = 1) {
+	pop(start, count) {
 		let result = [];
 		for (let i = 0; i < count; i++) {
-			let v = end ? this.value.pop() : this.value.shift();
+			let v = start ? this.value.shift() : this.value.pop();
 			result.push(v);
 		}
 		return result;
 	}
-	peek(end = true, count = 1) {
+	peek(start, count) {
 		let result = [];
 		for (let i = 0; i < count; i++) {
-			let v = end ? this.value[this.value.length-(i+1)] : this.value[i];
+			let v = start ? this.value[i] : this.value[this.value.length-(i+1)];
 			result.push(v);
 		}
 		return result;
 	}
 
 	give(vals) {
-		let end = state.mods.has(_reverse);
-		this.push(vals, end);
+		let start = state.mods.has(_reverse);
+		this.push(vals, start);
 	}
 	take(count = 1) {
-		let end = state.mods.has(_reverse);
+		let start = state.mods.has(_reverse);
 		let safe = state.mods.has(_safe);
 		if (state.mods.has(_greedy)) count = this.value.length;
 		return safe
-			? this.peek(end, count)
-			: this.pop(end, count);
+			? this.peek(start, count)
+			: this.pop(start, count);
 	}
 }
 
