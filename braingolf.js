@@ -223,6 +223,16 @@ var ops = {
 	'7': () => state.stacks[state.sp].give(7),
 	'8': () => state.stacks[state.sp].give(8),
 	'9': () => state.stacks[state.sp].give(9),
+	'>': () => {
+		let val = state.stacks[state.sp].take();
+		vprint(`Moving ${val} to start of stack.`);
+		state.stacks[state.sp].value.unshift(val);
+	},
+	'<': () => {
+		let val = state.stacks[state.sp].value.shift();
+		vprint(`Moving ${val} to start of stack.`);
+		state.stacks[state.sp].value.push(val);
+	},
 };
 
 function vprint(str, extraIndent = 0, prefix = true) {
