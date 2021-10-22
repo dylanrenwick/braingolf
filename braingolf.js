@@ -256,6 +256,11 @@ var ops = {
 	'7': () => state.stacks[state.sp].give(7),
 	'8': () => state.stacks[state.sp].give(8),
 	'9': () => state.stacks[state.sp].give(9),
+	'l': () => {
+		let len = state.stacks[state.sp].value.length;
+		vprint(`Pushing length of stack, ${len}, to stack.`);
+		state.stacks[state.sp].give(len);
+	},
 };
 
 function vprint(str, extraIndent = 0, prefix = true) {
