@@ -235,6 +235,12 @@ var ops = {
 		vprint(`Moving ${val} to start of stack.`);
 		state.stacks[state.sp].value.push(val);
 	},
+	'.': () => {
+		state.mods.add(_safe);
+		let val = state.stacks[state.sp].take();
+		vprint(`Duplicating ${val} on stack.`);
+		state.stacks[state.sp].give(val);
+	}
 };
 
 function vprint(str, extraIndent = 0, prefix = true) {
