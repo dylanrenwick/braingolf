@@ -449,6 +449,7 @@ function vprint(str, extraIndent = 0, prefix = true) {
 	);
 }
 function print(str) {
+	if (state.resetMods && state.mods.has(_silent)) return;
 	process.stdout.write(str);
 }
 
