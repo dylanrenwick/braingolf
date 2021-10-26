@@ -633,6 +633,7 @@ function runChar(c, i) {
 
 function parseArgs(args) {
 	let stackCount = 3;
+	let inputArgs = [];
 
 	for (let arg of args) {
 		switch (arg.substring(0, 2)) {
@@ -643,10 +644,24 @@ function parseArgs(args) {
 				stackCount = parseInt(arg.substring(2));
 				if (Number.isNaN(stackCount)) throw Error(`Invalid stack count: '${arg.substring(2)}'`);
 				break;
+			default:
+				inputArgs.push(arg);
+				break;
 		}
 	}
 
 	while (state.stacks.length < stackCount) state.stacks.push(new BGStack());
+
+	let inputStack = 0;
+	for (let arg of inputArgs) {
+		if (arg.match(/^[0-9 ]+$/)) {
+			let vals = arg.split(' ').filter(a => a.length).map(a => parseInt(a));
+			state.stacks[inputStack++].give(vals);
+		} else {
+			let vals = arg.split('').filter(a => a.length).map(a => a.charCodeAt(0));
+			state.stacks[inputStack++].give(vals);
+		}
+	}
 }
 
 var source = `
