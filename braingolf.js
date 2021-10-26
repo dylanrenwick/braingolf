@@ -94,6 +94,13 @@ var ops = {
 		if (state.escaped) string += '\\';
 		else state.escaped = true;
 	},
+	'#': (i) => {
+		if (i + 1 >= state.source.length) return;
+		let val = state.source.charCodeAt(i + 1);
+		vprint(`Next char is ${state.source[i + 1]} (${val})`);
+		state.stacks[state.sp].give(val);
+		state.ip++;
+	},
 	'"': () => {
 		state.resetMods = false;
 		if (!state.inString) { vprint("Beginning string"); state.inString = true; }
