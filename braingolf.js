@@ -290,7 +290,7 @@ var ops = {
 			state.stacks[state.sp].give(vals.map(v => {
 				let digits = v.toString().split('');
 				vprint(`Splitting ${v} into [${digits}]`);
-				return digits;
+				return digits.map(d => parseInt(d));
 			}).reduce((a, b) => a.concat(b)));
 		}
 	),
