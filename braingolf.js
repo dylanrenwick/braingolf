@@ -560,6 +560,8 @@ if (process.argv.length >= 3) {
 		parseArgs(process.argv.slice(4));
 	} else if (source.length === 0) {
 		source = undefined;
+	} else {
+		parseArgs(process.argv.slice(2));
 	}
 
 	if (source === undefined) {
