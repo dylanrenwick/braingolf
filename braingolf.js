@@ -77,6 +77,7 @@ var state = {
 	stacks: [],
 	sp: 0,
 	mainStack: 0,
+	loopStack: [],
 	mods: new BGMods,
 	resetMods: false,
 	inString: false,
@@ -387,6 +388,36 @@ var ops = {
 				.reduce((a, b) => a.concat(b)));
 		}
 	),
+	'[': (i) => {
+		state.resetMods = false;
+		vprint(`Loop started at ${i}`);
+		let j = 1;
+		while (i + j < state.source.length) {
+			let c = state.source[i + j];
+			if (c === '[') {
+				ops['['](i + j);
+				let innerLoop = state.loopStack[state.loopStack.length - 1];
+				j = innerLoop.end - i;
+			} else if (c === ']') {
+				let loop = {
+					start: i,
+					end: i + j,
+				};
+				vprint(`Loop end found at ${i + j}`);
+				state.loopStack.push(loop);
+				break;
+			}
+			j++;
+		}
+	},
+	']': () => {
+		state.resetMods = false;
+		let first = state.stacks[state.sp].peek(true, 1);
+		if (first === undefined) return;
+		if (first <= 0) return;
+		let loop = state.loopStack[state.loopStack.length - 1];
+		state.ip = loop.start;
+	}
 };
 
 function runOperator(count, nilad, monad, polyad) {
