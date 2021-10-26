@@ -472,8 +472,8 @@ var ops = {
 
 function runOperator(count, nilad, monad, polyad) {
 	let vals = state.stacks[state.sp].take(count).filter(n => n !== undefined);
-	if (nilad && vals.length === 0) nilad();
-	else if (monad && vals.length === 1) monad(vals[0]);
+	if (nilad && !state.mods.has(_greedy) && vals.length === 0) nilad();
+	else if (monad && !state.mods.has(_greedy) && vals.length === 1) monad(vals[0]);
 	else polyad(vals);
 }
 
