@@ -398,21 +398,22 @@ var ops = {
 	'[': (i) => {
 		state.resetMods = false;
 		vprint(`Loop started at ${i}`);
-		let j = 1;
+		let j = 1, loopCount = 0;
 		while (i + j < state.source.length) {
 			let c = state.source[i + j];
 			if (c === '[') {
-				ops['['](i + j);
-				let innerLoop = state.loopStack[state.loopStack.length - 1];
-				j = innerLoop.end - i;
+				loopCount++;
 			} else if (c === ']') {
-				let loop = {
-					start: i,
-					end: i + j,
-				};
-				vprint(`Loop end found at ${i + j}`);
-				state.loopStack.push(loop);
-				break;
+				if (loopCount > 0) loopCount--;
+				else {
+					let loop = {
+						start: i,
+						end: i + j,
+					};
+					vprint(`Loop end found at ${i + j}`);
+					state.loopStack.push(loop);
+					break;
+				}
 			}
 			j++;
 		}
@@ -420,11 +421,16 @@ var ops = {
 	']': () => {
 		state.resetMods = false;
 		let first = state.stacks[state.sp].peek(true, 1);
-		if (first === undefined) return;
-		if (first <= 0) return;
-		let loop = state.loopStack[state.loopStack.length - 1];
-		state.ip = loop.start;
-	}
+		vprint(`Loop counter is ${first}`);
+		if (first === undefined || first <= 0) {
+			vprint(`Loop complete`);
+			state.loopStack.pop();
+		} else {
+			vprint(`Looping`);
+			let loop = state.loopStack[state.loopStack.length - 1];
+			state.ip = loop.start;
+		}
+	},
 };
 
 function runOperator(count, nilad, monad, polyad) {
