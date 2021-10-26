@@ -115,7 +115,7 @@ var ops = {
 		}
 	},
 	'@': (i) => {
-		let countArg = '', j = 1;
+		let countArg = '', j = 1, count = 1;
 		while (i + j < state.source.length && state.source[i + j].match(/[0-9]/)) {
 			countArg += state.source[i + j];
 			j++;
@@ -125,7 +125,7 @@ var ops = {
 		if (countArg.length > 0) {
 			let count = parseInt(countArg);
 			if (Number.isNaN(count)) throw Error(`Not a valid number! '${countArg}'`);
-		} else count = 1;
+		}
 		let vals = state.stacks[state.sp].take(undefined, count);
 		let str = String.fromCharCode.apply(null, vals);
 		print(str);
