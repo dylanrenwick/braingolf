@@ -396,6 +396,16 @@ var ops = {
 				.reduce((a, b) => a.concat(b)));
 		}
 	),
+	'u': () => {
+		state.resetMods = false;
+		let newStack = new BGStack();
+		let stack = state.stacks[state.sp].value.slice();
+		for (let i = 0; i < stack.length; i++) {
+			if (stack.indexOf(stack[i]) < i) continue;
+			newStack.give(stack[i]);
+		}
+		state.stacks[state.sp] = newStack;
+	},
 	'[': (i) => {
 		state.resetMods = false;
 		vprint(`Loop started at ${i}`);
