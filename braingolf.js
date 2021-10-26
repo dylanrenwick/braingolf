@@ -78,6 +78,7 @@ var state = {
 	sp: 0,
 	mainStack: 0,
 	loopStack: [],
+	conditions: [],
 	mods: new BGMods,
 	resetMods: false,
 	inString: false,
@@ -431,6 +432,42 @@ var ops = {
 			state.ip = loop.start;
 		}
 	},
+	'?': (i) => {
+		runConditional(i, () => {
+			let [val] = state.stacks[state.sp].take();
+			return val !== undefined && val > 0;
+		});
+	},
+	'e': (i) => {
+		runConditional(i, () => {
+			let [a, b] = state.stacks[state.sp].take(2);
+			return a !== undefined && b !== undefined && a == b;
+		});
+	},
+	'E': (i) => {
+		runConditional(i, () => {
+			let stackIndexA = state.sp;
+			let stackIndexB = state.sp + 1;
+			if (stackIndexB >= state.stacks.length) stackIndexB = 0;
+			if (stackIndexA === stackIndexB) return true;
+			let stackA = state.stacks[stackIndexA].value.slice();
+			let stackB = state.stacks[stackIndexB].value.slice();
+			if (stackA.length !== stackB.length) return false;
+			for (let j = 0; j < stackA.length; j++) {
+				if (stackA[j] !== stackB[j]) return false;
+			}
+			return true;
+		});
+	},
+	':': (i) => {
+		let [cond] = state.conditions.filter(c => c.else === i);
+		if (cond === undefined) return;
+		vprint('Found else');
+		if (cond.result) {
+			vprint('Condition was true, skipping else clause');
+			state.ip = cond.end;
+		}
+	}
 };
 
 function runOperator(count, nilad, monad, polyad) {
@@ -438,6 +475,44 @@ function runOperator(count, nilad, monad, polyad) {
 	if (nilad && vals.length === 0) nilad();
 	else if (monad && vals.length === 1) monad(vals[0]);
 	else polyad(vals);
+}
+
+function runConditional(i, condition) {
+	let elsePos, endPos;
+	let j = 1, condCount = 0;
+	while (i + j < state.source.length) {
+		let c = state.source[i + j];
+		if (c === '?' || c === 'e' || c === 'E') {
+			condCount++;
+		} else if (c === '|') {
+			if (condCount > 0) condCount--;
+			else {
+				endPos = i + j;
+				break;
+			}
+		} else if (c === ':' && condCount === 0) {
+			elsePos = i + j;
+		}
+		j++;
+	}
+
+	let cond = {
+		start: i,
+		else: (elsePos !== undefined) ? elsePos : undefined,
+		end: endPos,
+		result: condition()
+	};
+	state.conditions.push(cond);
+
+	vprint(`Condition starts at ${i}`
+		+ ((cond.else !== undefined) ? `, has else at ${cond.else}` : '')
+		+ ` and ends at ${cond.end}`);
+	vprint(`Condition is ${cond.result}`
+		+ (!cond.result ? `, skipping to ${(cond.else !== undefined ? 'else' : 'end')}` : ''));
+
+	if (!cond.result) {
+		state.ip = cond.else !== undefined ? cond.else : cond.end;
+	}
 }
 
 function vprint(str, extraIndent = 0, prefix = true) {
