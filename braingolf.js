@@ -247,7 +247,7 @@ var ops = {
 	'<': () => {
 		state.resetMods = false;
 		let val = state.stacks[state.sp].value.shift();
-		vprint(`Moving ${val} to start of stack.`);
+		vprint(`Moving ${val} to end of stack.`);
 		state.stacks[state.sp].value.push(val);
 	},
 	'.': () => {
