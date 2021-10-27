@@ -422,6 +422,18 @@ var ops = {
 		}
 		state.stacks[state.sp] = newStack;
 	},
+	'U': () => {
+		state.mods.rem(_greedy);
+		let vals = state.stacks[state.sp].take(2).filter(v => v !== undefined);
+		let [a, b] = [0, 10];
+		if (vals.length === 2) {
+			[a, b] = vals;
+		} else if (vals.length === 1) {
+			[b] = vals;
+		}
+
+		state.stacks[state.sp].give(range(a, b));
+	},
 	'[': (i) => {
 		state.resetMods = false;
 		vprint(`Loop started at ${i}`);
@@ -560,6 +572,10 @@ function arrayEquals(a, b) {
 		if (a[i] !== b[i]) return false;
 	}
 	return true;
+}
+
+function range(from, to) {
+    return [...Array(to - from).keys()].map(i => i + from);
 }
 
 function primeFactors(n) {
