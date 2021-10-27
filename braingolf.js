@@ -728,6 +728,8 @@ if (process.argv.length >= 3) {
 	if (source === undefined) {
 		throw Error(`Could not read source!`);
 	}
+} else {
+	parseArgs([]);
 }
 
 state.source = source;
