@@ -10,12 +10,28 @@ const _processInString = ['\\', '"'];
 
 class BGMods {
 	constructor() {
-		this.value = [];
+		this.reset();
 	}
 
-	add(m) { if (!this.has(m)) this.value.push(m); }
-	reset() { this.value = []; }
-	has(m) { return state.resetMods ? this.value.includes(m) : false; }
+	add(m) { this[m] = true; }
+	rem(m) { this[m] = false; }
+	has(m) { return this[m]; }
+
+	reset() {
+		this[_safe] = false;
+		this[_reverse] = false;
+		this[_silent] = false;
+		this[_greedy] = false;
+	}
+
+	toString() {
+		return '['
+			+ (this[_safe] ? _safe + ', ' : '')
+			+ (this[_reverse] ? _reverse + ', ' : '')
+			+ (this[_silent] ? _silent + ', ' : '')
+			+ (this[_greedy] ? _greedy : '')
+			+ ']';
+	}
 }
 
 class BGStack {
@@ -361,14 +377,14 @@ var ops = {
 		}
 	},
 	'm': () => {
-		if (state.mods.has(_greedy)) state.mods.value.splice(state.mods.value.indexOf(_greedy), 1);
+		state.mods.rem(_greedy);
 		let val = state.stacks[state.sp].take(1);
 		let newIndex = state.sp - 1;
 		if (newIndex < 0) newIndex = state.stacks.length - 1;
 		state.stacks[newIndex].give(val);
 	},
 	'M': () => {
-		if (state.mods.has(_greedy)) state.mods.value.splice(state.mods.value.indexOf(_greedy), 1);
+		state.mods.rem(_greedy);
 		let val = state.stacks[state.sp].take(1);
 		let newIndex = state.sp + 1;
 		if (newIndex >= state.stacks.length) newIndex = 0;
@@ -623,7 +639,7 @@ function parseChar(c) {
 	} else if (_modifiers.includes(c)) {
 		vprint(`Adding modifier ${c}`);
 		state.mods.add(c);
-		vprint(`Modifiers: [${state.mods.value}]`);
+		vprint(`Modifiers: [${state.mods}]`);
 	} else {
 		state.resetMods = true;
 		runChar(c, state.ip);
